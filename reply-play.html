@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reply zoom play</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 Geist, -apple-system, BlinkMacSystemFont, sans-serif; color: #1d1c1d; background: #f6f6f7; }
+  .lead { max-width: 720px; margin: 0 auto; padding: 28px 24px 8px; }
+  .lead h1 { font-size: 28px; line-height: 1.15; margin: 0 0 8px; font-weight: 600; }
+  .lead p { margin: 0; color: #5e5d60; }
+  .track { height: 640vh; }
+  .pin { position: sticky; top: 0; height: 100vh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; padding: 16px 28px 12px; }
+  .titles { position: relative; height: 68px; }
+  .title { position: absolute; left: 50%; top: 0; width: min(760px, 100%); transform: translateX(-50%); text-align: center; }
+  .title .k { margin: 0 0 6px; font: 500 12px/1 Geist Mono, ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: #6f6e72; }
+  .title h2 { margin: 0; font-size: clamp(24px, 2.4vw, 32px); line-height: 1.15; font-weight: 600; letter-spacing: -.015em; }
+  .world { position: relative; min-height: 0; }
+  .stack { position: absolute; left: 28px; width: 220px; display: grid; gap: 14px; }
+  .plate { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; align-items: center; }
+  .plate i { width: 36px; height: 36px; border: 1px solid #d9d8dc; border-radius: 10px; display: grid; place-items: center; background: #fff; color: #3a3940; }
+  .plate i svg { width: 18px; height: 18px; }
+  .plate b { display: block; font-size: 14px; font-weight: 600; }
+  .plate span { display: block; margin-top: 1px; font-size: 12px; color: #6f6e72; }
+  .frame { position: absolute; overflow: visible; }
+  .bubble { width: 480px; transform-origin: 0 0; display: flex; flex-direction: column; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.02), 0 30px 60px -36px rgba(0,0,0,.35); font-family: Geist, sans-serif; color: #1d1c1d; }
+  .bar, .comp { flex: none; display: flex; align-items: center; }
+  .bar { height: 46px; gap: 8px; padding: 0 16px; border-bottom: 1px solid #eee; font-size: 13px; color: #6f6e72; }
+  .bar b { font-size: 15px; font-weight: 700; color: #1d1c1d; }
+  .bar em { margin-left: auto; font-style: normal; font: 500 12px Geist Mono, ui-monospace, monospace; color: #6f6e72; }
+  .comp { height: 74px; border-top: 1px solid #eee; padding: 8px 12px 10px; display: block; }
+  .comp .ph { display: block; color: #8a898d; font-size: 14px; padding: 2px 4px 8px; }
+  .tools { display: flex; align-items: center; gap: 14px; color: #6f6e72; font-size: 14px; padding: 0 4px; }
+  .tools .send { margin-left: auto; width: 28px; height: 28px; display: grid; place-items: center; }
+  .tools svg { width: 16px; height: 16px; }
+  .feed { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+  .scroll { padding: 8px 0 12px; }
+  .msg { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 8px; padding: 6px 16px; }
+  .av { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; font: 700 13px/1 Geist, sans-serif; color: #fff; background: #3f5f8f; }
+  .av.bot { background: #1d1c1d; font-size: 11px; }
+  .who { font-weight: 700; font-size: 15px; }
+  .who small { font-weight: 400; color: #6f6e72; margin-left: 6px; font-size: 12px; }
+  .app { display: inline-block; font: 700 10px/1 Geist, sans-serif; letter-spacing: .02em; background: #f2f2f3; color: #6f6e72; border-radius: 3px; padding: 3px 4px; margin-left: 6px; vertical-align: 2px; }
+  .body { font-size: 15px; line-height: 1.45; margin-top: 2px; }
+  .body p { margin: 0 0 8px; }
+  .mention { color: #1264a3; background: #e8f5fa; border-radius: 3px; padding: 0 2px; }
+  .intro { padding: 10px 16px 14px; font-size: 13px; line-height: 1.4; color: #6f6e72; }
+  .intro b { display: block; margin-bottom: 4px; font-size: 20px; font-weight: 700; color: #1d1c1d; }
+  .intro strong { font-weight: 700; color: #1d1c1d; }
+  .w { opacity: 0; }
+  .w.on { opacity: 1; }
+  .readout { margin: 0; font-size: 13px; }
+  .readout span { display: block; margin-top: 2px; color: #6f6e72; font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="lead">
+    <h1>Could an agent answer them?</h1>
+    <p>The window starts as the original column: 480 wide, 600 tall, on the right, beside the stack. It stays that size while the reply streams. Then it moves to the center and scales down until that same reply fits, the title changes while the frame is still, and iteration one zooms back to a 480 reading column of the same reply. The rewritten answer is the end of that chapter, not this entrance.</p>
+  </div>
+  <section class="track" id="track">
+    <div class="pin">
+      <div class="titles">
+        <div class="title" id="tFeas"><p class="k">Feasibility check</p><h2>Could an agent answer them?</h2></div>
+        <div class="title" id="tMan"><p class="k">Iteration I</p><h2>Making it a bot with manners</h2></div>
+      </div>
+      <div class="world" id="world">
+        <div class="stack" id="stack">
+          <div class="plate"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 16a4 4 0 0 1 .2-8 5 5 0 0 1 9.6-1.5A3.5 3.5 0 0 1 18 16Z"/></svg></i><div><b>Server</b><span>Cloudflare Worker</span></div></div>
+          <div class="plate"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="7"/><path d="M12 8v4.5l3 2"/></svg></i><div><b>Session</b><span>Durable Object</span></div></div>
+          <div class="plate"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5 13.4 8l5.6.2-4.4 3.5 1.5 5.4L12 14.2 8 17.1l1.5-5.4L5 8.2 10.6 8Z"/></svg></i><div><b>Model</b><span>Gemini</span></div></div>
+          <div class="plate"><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="7"/><path d="M3 12h18M12 5c2 2.2 2 11.8 0 14M12 5c-2 2.2-2 11.8 0 14"/></svg></i><div><b>Tool connectors</b><span>Notion · GitHub · Web</span></div></div>
+        </div>
+        <div class="frame" id="frame">
+          <div class="bubble" id="bubble">
+            <div class="bar"><b># uno-bot-sandbox</b><span>2 members</span><em id="words"></em></div>
+            <div class="feed"><div class="scroll" id="scroll"></div></div>
+            <div class="comp">
+              <div class="ph">Message #uno-bot-sandbox</div>
+              <div class="tools"><span>+</span><span>Aa</span><span>☺</span><span>@</span><span class="send" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M1.8 1.9 14.6 7.6c.4.2.4.6 0 .8L1.8 14.1c-.4.2-.8-.2-.6-.6L3.1 8.6 9 8 3.1 7.4 1.2 2.5c-.2-.4.2-.8.6-.6z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="readout" id="readout"></p>
+    </div>
+  </section>
+<script>
+const COL = 480;
+const REST_H = 600;
+const WORDS = 639;
+const track = document.getElementById("track");
+const world = document.getElementById("world");
+const frameEl = document.getElementById("frame");
+const bubble = document.getElementById("bubble");
+const scrollEl = document.getElementById("scroll");
+const stack = document.getElementById("stack");
+const words = document.getElementById("words");
+const tFeas = document.getElementById("tFeas");
+const tMan = document.getElementById("tMan");
+const readout = document.getElementById("readout");
+let raf = 0;
+/** @type {HTMLElement[]} */
+let rawWords = [];
+
+/**
+ * The ask and the one reply. The column stays 480 wide, and the words do not change when the title does.
+ * @returns {void}
+ */
+function buildThread() {
+  const raw = [
+    "<p><b>Great question!</b> Date pickers are an important part of any form, and choosing the right one can make a big difference to the overall user experience. In our design system, the date picker lives under the Forms category, alongside text fields, selects and checkboxes.</p>",
+    "<p>For the tutor availability form, you will most likely want the single-date variant, because availability is usually entered one day at a time, although for a block of days, such as time off, the range variant might be more appropriate. It really depends on how the form is structured.</p>",
+    "<p>Here is a detailed comparison of all of the variants so you can see the differences side by side. Single date is the default for forms, settings and profile dates: one field, one month, typing as MM/DD/YYYY. Range is for reports and time off: two fields, two months, and it needs 640px of width. Inline is for scheduling and booking: the calendar stays open, and keyboard navigation is not in yet.</p>",
+    "<p>I also looked at how often each variant is used. Single date is on 23 screens, range on 9, inline on 4, and the old picker is still on 2. That is 38 screens: 60.5% single date, 23.7% range, 10.5% inline, 5.3% the old picker.</p>",
+    "<p>I’ve also gone ahead and updated the Forms guidelines in Notion so they now say to use the range picker for time off, and I rewrote the intro paragraph while I was there. That’s all done, so no action is needed on your part!</p>",
+    "<p>Good news on the range picker, too: it was approved by the design team in the spring as the recommended default for anything involving more than one date, so you can go ahead and use it with confidence.</p>",
+    "<p>References: the Date picker docs, DatePicker.jsx, the range story, the Figma frame, the March 4 thread, the Forms revamp notes, the accessibility checklist, the dark mode tokens, and the component index.</p>",
+    "<p>I hope this helps! Please be aware that this response was generated by a language model and may contain inaccuracies, so you should verify anything here against the docs or with the design team before relying on it. Let me know whether it helped.</p>",
+  ].join("");
+  scrollEl.innerHTML = `
+    <div class="intro"><b>#uno-bot-sandbox</b><span>This is the very beginning of the <strong>#uno-bot-sandbox</strong> channel. Just you and le goat.</span></div>
+    <div class="msg" id="ask"><div class="av">BG</div><div><div class="who">Bill G.<small>2:14 PM</small></div><div class="body"><span class="mention">@le goat</span> which date picker should I use for the tutor availability form? is there a range one too?</div></div></div>
+    <div class="msg" id="raw"><div class="av bot">lg</div><div><div class="who">le goat<span class="app">AGENT</span><small>2:18 PM</small></div><div class="body" id="rawBody">${raw}</div></div></div>`;
+  const body = document.getElementById("rawBody");
+  const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+  /** @type {Text[]} */
+  const nodes = [];
+  let node = walker.nextNode();
+  while (node) { nodes.push(/** @type {Text} */ (node)); node = walker.nextNode(); }
+  nodes.forEach((text) => {
+    const bits = text.data.split(/(\s+)/);
+    const frag = document.createDocumentFragment();
+    bits.forEach((bit) => {
+      if (!bit) return;
+      if (!bit.trim()) { frag.appendChild(document.createTextNode(bit)); return; }
+      const span = document.createElement("span");
+      span.className = "w";
+      span.textContent = bit;
+      frag.appendChild(span);
+      rawWords.push(span);
+    });
+    text.parentNode.replaceChild(frag, text);
+  });
+}
+
+/**
+ * @param {number} t
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+function span(t, a, b) {
+  return Math.min(1, Math.max(0, (t - a) / (b - a)));
+}
+
+/**
+ * @param {number} t
+ * @returns {number}
+ */
+function ease(t) {
+  return t * t * (3 - 2 * t);
+}
+
+/**
+ * @param {number} a
+ * @param {number} b
+ * @param {number} t
+ * @returns {number}
+ */
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+/**
+ * @returns {number}
+ */
+function progress() {
+  const total = track.offsetHeight - window.innerHeight;
+  return Math.min(1, Math.max(0, -track.getBoundingClientRect().top / total));
+}
+
+/**
+ * @param {number} p
+ * @returns {string}
+ */
+function beat(p) {
+  if (p < 0.22) return "Original column, on the right, beside the stack";
+  if (p < 0.42) return "Streaming. Size held.";
+  if (p < 0.58) return "Moves to center and zooms out to the whole reply";
+  if (p < 0.74) return "Title changes. Zoomed-out window still.";
+  if (p < 0.90) return "Zooms in. Same reply, getting larger.";
+  return "Iteration one. Same reply, reading size.";
+}
+
+/**
+ * Paint one scroll position. The layout column stays 480 wide, so the lines never reflow.
+ * @returns {void}
+ */
+function frame() {
+  raf = 0;
+  const p = progress();
+  const shown = ease(span(p, 0.02, 0.08));
+  const stream = ease(span(p, 0.22, 0.40));
+  const grow = ease(span(p, 0.42, 0.58));
+  const titleOut = ease(span(p, 0.60, 0.66));
+  const titleIn = ease(span(p, 0.68, 0.74));
+  const back = ease(span(p, 0.76, 0.90));
+  const stageH = world.getBoundingClientRect().height;
+  const raw = document.getElementById("raw");
+  const fullH = bubble.querySelector(".bar").offsetHeight + scrollEl.scrollHeight + bubble.querySelector(".comp").offsetHeight;
+  const sOut = Math.min(1, stageH / Math.max(fullH, 1));
+  const readH = Math.min(820, stageH);
+  const onH = lerp(lerp(REST_H, stageH, grow), readH, back);
+  const scale = lerp(lerp(1, sOut, grow), 1, back);
+  const onW = COL * scale;
+  const layoutH = onH / Math.max(scale, 0.001);
+  const worldW = world.getBoundingClientRect().width;
+  const restX = Math.max(280, worldW - COL - 36);
+  const x = lerp(restX, (worldW - onW) / 2, Math.max(grow, back));
+  const restY = Math.max(0, (stageH - REST_H) / 2);
+  const y = lerp(restY, Math.max(0, (stageH - onH) / 2), Math.max(grow, back));
+
+  frameEl.style.opacity = String(shown);
+  frameEl.style.width = `${onW}px`;
+  frameEl.style.height = `${onH}px`;
+  frameEl.style.left = `${x}px`;
+  frameEl.style.top = `${y}px`;
+  bubble.style.height = `${layoutH}px`;
+  bubble.style.transform = `scale(${scale})`;
+
+  const revealed = Math.round(rawWords.length * stream);
+  rawWords.forEach((word, i) => word.classList.toggle("on", i < revealed));
+  raw.style.visibility = stream > 0.01 ? "visible" : "hidden";
+  const feedH = layoutH - 46 - 74;
+  const anchor = revealed > 0 ? rawWords[revealed - 1] : document.getElementById("ask");
+  const localBottom = anchor.getBoundingClientRect().bottom - scrollEl.getBoundingClientRect().top;
+  const tail = Math.max(0, localBottom + 28 - feedH);
+  const introBottom = scrollEl.querySelector(".intro").getBoundingClientRect().bottom - scrollEl.getBoundingClientRect().top;
+  const readFollow = Math.max(0, introBottom);
+  const follow = lerp(lerp(tail, 0, grow), readFollow, back);
+  scrollEl.style.transform = `translateY(${-follow}px)`;
+
+  const stackIn = shown * (1 - grow);
+  stack.style.opacity = String(stackIn);
+  stack.style.visibility = stackIn < 0.02 ? "hidden" : "visible";
+  stack.style.top = `${restY + REST_H / 2}px`;
+  stack.style.transform = "translateY(-50%)";
+
+  tFeas.style.opacity = String(shown * (1 - titleOut));
+  tMan.style.opacity = String(titleIn);
+  words.textContent = stream > 0.02 ? `${Math.round(WORDS * Math.max(stream, grow))} words` : "";
+
+  readout.innerHTML = `<b>${Math.round(onW)} × ${Math.round(onH)} on screen · layout ${COL} × ${Math.round(layoutH)} · scale ${scale.toFixed(2)}</b><span>${beat(p)} · the line measure stays ${COL}</span>`;
+}
+
+/**
+ * @returns {void}
+ */
+function requestFrame() {
+  if (!raf) raf = requestAnimationFrame(frame);
+}
+
+buildThread();
+addEventListener("scroll", requestFrame, { passive: true });
+addEventListener("resize", requestFrame);
+requestFrame();
+</script>
+</body>
+</html>

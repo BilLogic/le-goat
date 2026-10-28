@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sankey play</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 Geist, -apple-system, BlinkMacSystemFont, sans-serif; color: #1d1c1d; background: #fff; }
+  .lead, .tail { max-width: 720px; margin: 0 auto; padding: 40px 24px 0; }
+  .lead h1 { font-size: 28px; font-weight: 600; line-height: 1.15; margin: 0 0 8px; }
+  .lead p, .tail p { margin: 0; color: #5e5d60; }
+  .spacer { height: 100vh; }
+  .after { height: 120vh; }
+  figure { max-width: 1120px; margin: 0 auto; padding: 8px 28px 32px; }
+  figure h2 { margin: 0 0 6px; font-size: 22px; font-weight: 600; }
+  figure .sub { margin: 0 0 20px; color: #5e5d60; }
+  svg { display: block; width: 100%; height: auto; background: #fff; }
+  #line { position: fixed; left: 0; right: 0; top: 72%; border-top: 1px dashed #1683b0; pointer-events: none; z-index: 3; }
+  #line span { position: absolute; right: 16px; top: -18px; font-size: 12px; color: #1683b0; }
+  #hud { position: fixed; left: 16px; bottom: 16px; z-index: 4; background: #fff; border: 1px solid #e3e2e4; border-radius: 8px; padding: 10px 12px; min-width: 220px; }
+  #hud b { display: block; font-size: 14px; }
+  #hud span { display: block; margin-top: 4px; font-size: 12px; color: #5e5d60; }
+</style>
+</head>
+<body>
+  <div id="line" aria-hidden="true"><span>play starts here, before the title reaches the middle</span></div>
+  <div id="hud" aria-live="polite"><b id="phase">Waiting</b><span id="where">Scroll down</span></div>
+  <div class="lead">
+    <h1>Did these all need me?</h1>
+    <p>Scroll down. The chart starts as its title reaches the line, still below the middle of the screen, and plays on its own. Scroll back up across that same line and it reverses from whatever frame it is on. Cross the line again going down and it plays forward from there.</p>
+  </div>
+  <div class="spacer"></div>
+  <figure id="chart">
+    <h2>Did these all need me?</h2>
+    <p class="sub">Just over half didn't need me at all. About a third needed only my sign-off once the groundwork was done. Roughly one in eight needed me from the start.</p>
+    <svg id="svg" role="img" aria-label="2,413 requests from where they arrived, through nine kinds of ask, to what each needed."></svg>
+  </figure>
+  <div class="after"></div>
+  <div class="tail"><p>Ribbons run from bar to bar. The kind names sit in the flow, and the ribbon is cut out around the words only, so the column does not split. The line works in both directions: down plays forward, up plays back, from the frame you are on.</p></div>
+<script>
+/** Same corpus the site chart uses. */
+const SK1 = [["Direct message", "A fact", 113], ["Direct message", "Where it is", 130], ["Direct message", "Access", 65], ["Direct message", "How to hand off", 120], ["Direct message", "Is this design right", 245], ["Direct message", "Status or past decision", 264], ["Direct message", "How it works here", 154], ["Direct message", "Which source is true", 90], ["Direct message", "Who to ask", 70], ["Public channel", "Which source is true", 62], ["Public channel", "Is this design right", 74], ["Public channel", "Where it is", 29], ["Public channel", "How it works here", 57], ["Public channel", "A fact", 30], ["Public channel", "Who to ask", 24], ["Public channel", "Status or past decision", 88], ["Meeting", "Where it is", 96], ["Meeting", "Status or past decision", 117], ["Meeting", "How it works here", 142], ["Public channel", "Access", 22], ["Meeting", "Is this design right", 28], ["Meeting", "Access", 71], ["Meeting", "Which source is true", 52], ["Meeting", "How to hand off", 29], ["Public channel", "How to hand off", 26], ["Meeting", "Who to ask", 83], ["Meeting", "A fact", 132]];
+const SK2 = [["A fact", "Needed my judgment", 39], ["Where it is", "Could be looked up", 233], ["Access", "Needed my judgment", 72], ["How to hand off", "Could be looked up", 45], ["Is this design right", "Needed prep, then a person", 314], ["A fact", "Could be looked up", 190], ["How to hand off", "Needed my judgment", 15], ["Where it is", "Needed prep, then a person", 15], ["Access", "Could be looked up", 79], ["Status or past decision", "Could be looked up", 278], ["Status or past decision", "Needed prep, then a person", 118], ["How it works here", "Could be looked up", 240], ["How to hand off", "Needed prep, then a person", 115], ["Which source is true", "Needed prep, then a person", 128], ["Status or past decision", "Needed my judgment", 73], ["How it works here", "Needed prep, then a person", 78], ["Is this design right", "Needed my judgment", 28], ["A fact", "Needed prep, then a person", 46], ["Which source is true", "Could be looked up", 76], ["How it works here", "Needed my judgment", 35], ["Who to ask", "Needed prep, then a person", 32], ["Who to ask", "Could be looked up", 126], ["Who to ask", "Needed my judgment", 19], ["Is this design right", "Could be looked up", 5], ["Access", "Needed prep, then a person", 7], ["Where it is", "Needed my judgment", 7]];
+const LBL = {"Where it is":"Where to find something","A fact":"A quick fact","How it works here":"How we do things here","Status or past decision":"Status or a past decision","Who to ask":"Who to ask","Which source is true":"Which version is right","How to hand off":"How to hand off work","Is this design right":"Feedback on a design","Access":"Getting access"};
+const FL = [["Didn't need me"], ["Needed only", "my sign-off"], ["Needed me"]];
+const FIT = ["Could be looked up", "Needed prep, then a person", "Needed my judgment"];
+/** A little faster than the site's 1× reveal, so a scroll past does not feel stuck. */
+const SPEED = 0.72;
+const svg = document.getElementById("svg");
+const phaseEl = document.getElementById("phase");
+const whereEl = document.getElementById("where");
+const NS = "http://www.w3.org/2000/svg";
+
+/**
+ * @param {string} name
+ * @param {Record<string, string | number>} attrs
+ * @param {Element} parent
+ * @returns {SVGElement}
+ */
+function el(name, attrs, parent) {
+  const node = document.createElementNS(NS, name);
+  Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, String(v)));
+  parent.appendChild(node);
+  return node;
+}
+
+/**
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number} x2
+ * @param {number} y2
+ * @returns {(t: number) => number}
+ */
+function bezier(x1, y1, x2, y2) {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sample = (t) => ((ax * t + bx) * t + cx) * t;
+  const slope = (t) => (3 * ax * t + 2 * bx) * t + cx;
+  return (x) => {
+    let t = x;
+    for (let i = 0; i < 6; i += 1) t -= (sample(t) - x) / (slope(t) || 1);
+    t = Math.min(1, Math.max(0, t));
+    return ((ay * t + by) * t + cy) * t;
+  };
+}
+
+const lift = bezier(0.32, 0.72, 0, 1);
+
+/**
+ * @param {Array<Array<string | number>>} rows
+ * @param {number} i
+ * @param {string} key
+ * @returns {number}
+ */
+function sum(rows, i, key) {
+  return rows.filter((r) => r[i] === key).reduce((t, r) => t + Number(r[2]), 0);
+}
+
+/**
+ * Mix a color into white. t is 0–100.
+ * @param {string} hex
+ * @param {number} t
+ * @returns {string}
+ */
+function mix(hex, t) {
+  const n = hex.replace("#", "");
+  const c = [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16));
+  return `rgb(${c.map((v) => Math.round(255 + (v - 255) * (t / 100))).join(",")})`;
+}
+
+/**
+ * @param {number[]} counts
+ * @param {number} lo
+ * @param {number} hi
+ * @param {string} hex
+ * @returns {string[]}
+ */
+function ramp(counts, lo, hi, hex) {
+  const mn = Math.min(...counts);
+  const mx = Math.max(...counts);
+  return counts.map((c) => mix(hex, lo + (hi - lo) * (mx === mn ? 1 : (c - mn) / (mx - mn))));
+}
+
+const SRC = ["Direct message", "Meeting", "Public channel"];
+const KIND = ["Where it is", "A fact", "How it works here", "Status or past decision", "Who to ask", "Which source is true", "How to hand off", "Is this design right", "Access"]
+  .slice().sort((a, b) => sum(SK1, 1, b) - sum(SK1, 1, a));
+const SG = ramp(SRC.map((n) => sum(SK1, 0, n)), 30, 88, "#3a3940");
+const KG = ramp(KIND.map((n) => sum(SK1, 1, n)), 26, 84, "#3a3940");
+const FC = ramp(FIT.map((n) => sum(SK2, 1, n)), 30, 100, "#1683b0");
+
+const VW = 1120;
+const VH = 700;
+const TOP = 36;
+const COLH = 630;
+const BAR = 10;
+const GL = 156;
+const X0 = GL;
+const X2 = VW - GL - BAR;
+const X1 = Math.round((X0 + X2) / 2) - 36;
+const GAP = [30, 16, 30];
+
+/**
+ * @param {string[]} names
+ * @param {(name: string) => number} total
+ * @param {number} gap
+ * @param {number} k
+ * @returns {{ y: number, h: number }[]}
+ */
+function column(names, total, gap, k) {
+  const used = names.reduce((t, n) => t + total(n) * k, 0) + gap * (names.length - 1);
+  let y = TOP + (COLH - used) / 2;
+  return names.map((n) => {
+    const h = Math.max(2, total(n) * k);
+    const box = { y, h };
+    y += h + gap;
+    return box;
+  });
+}
+
+const kScale = Math.min(
+  (COLH - GAP[0] * (SRC.length - 1)) / 2413,
+  (COLH - GAP[1] * (KIND.length - 1)) / 2413,
+  (COLH - GAP[2] * (FIT.length - 1)) / 2413,
+);
+const nS = column(SRC, (n) => sum(SK1, 0, n), GAP[0], kScale);
+const nK = column(KIND, (n) => sum(SK1, 1, n), GAP[1], kScale);
+const nF = column(FIT, (n) => sum(SK2, 1, n), GAP[2], kScale);
+
+svg.setAttribute("viewBox", `0 0 ${VW} ${VH}`);
+const defs = el("defs", {}, svg);
+const mask = el("mask", { id: "kindLane", maskUnits: "userSpaceOnUse", x: 0, y: 0, width: VW, height: VH }, defs);
+el("rect", { x: 0, y: 0, width: VW, height: VH, fill: "#fff" }, mask);
+const ribbons1 = el("g", {}, svg);
+const ribbons2 = el("g", { mask: "url(#kindLane)" }, svg);
+const bars = el("g", {}, svg);
+const words = el("g", {}, svg);
+
+/** @type {{ t0: number, d: number, fn: (p: number) => void }[]} */
+const tracks = [];
+
+/**
+ * @param {number} t0
+ * @param {number} d
+ * @param {(p: number) => void} fn
+ * @param {(t: number) => number} [ease]
+ * @returns {void}
+ */
+function add(t0, d, fn, ease) {
+  const curve = ease || lift;
+  tracks.push({ t0: t0 * SPEED, d: Math.max(1, d * SPEED), fn: (p) => fn(curve(p)) });
+}
+
+/**
+ * @param {number} c
+ * @param {number} i
+ * @returns {number}
+ */
+function land(c, i) {
+  return 120 + c * 3.5 * 60 + i * 40 + 350;
+}
+
+/**
+ * @param {number} x
+ * @param {number} y
+ * @param {string} value
+ * @param {Record<string, string | number>} extra
+ * @param {Element} [parent]
+ * @returns {SVGElement}
+ */
+function text(x, y, value, extra, parent) {
+  const node = el("text", Object.assign({ x, y, fill: "#1d1c1d", "font-family": "Geist, sans-serif", "font-size": 13 }, extra), parent || words);
+  node.textContent = value;
+  return node;
+}
+
+/**
+ * @param {SVGElement} node
+ * @param {number} t0
+ * @returns {void}
+ */
+function rise(node, t0) {
+  add(t0, 280, (p) => {
+    node.setAttribute("opacity", p.toFixed(3));
+    node.setAttribute("transform", `translate(0 ${(1 - p) * 4})`);
+  });
+}
+
+const heads = [
+  text(X0 + BAR / 2, 18, "Where it arrived", { "text-anchor": "middle", fill: "#6f6e72", "font-size": 12 }),
+  text(X1 + BAR / 2, 18, "Kind of ask", { "text-anchor": "middle", fill: "#6f6e72", "font-size": 12 }),
+  text(X2 + BAR / 2, 18, "What it needed", { "text-anchor": "middle", fill: "#6f6e72", "font-size": 12 }),
+];
+heads.forEach((h, c) => rise(h, land(c, 0)));
+
+/**
+ * @param {SVGRectElement} rect
+ * @param {number} y
+ * @param {number} h
+ * @param {number} t0
+ * @returns {void}
+ */
+function growBar(rect, y, h, t0) {
+  const cy = y + h / 2;
+  add(t0 - 350, 350, (p) => {
+    const hh = h * p;
+    rect.setAttribute("height", hh.toFixed(2));
+    rect.setAttribute("y", (cy - hh / 2).toFixed(2));
+  });
+}
+
+SRC.forEach((name, i) => {
+  const o = nS[i];
+  const rect = el("rect", { x: X0, y: o.y, width: BAR, height: 0, rx: 2, fill: SG[i] }, bars);
+  const nameEl = text(X0 - 12, o.y + o.h / 2 - 1, name, { "text-anchor": "end" });
+  const count = text(X0 - 12, o.y + o.h / 2 + 15, "0", { "text-anchor": "end", "font-family": "Geist Mono, ui-monospace, monospace", "font-size": 12, fill: "#6f6e72" });
+  const t0 = land(0, i);
+  growBar(rect, o.y, o.h, t0);
+  rise(nameEl, t0);
+  const fin = sum(SK1, 0, name);
+  add(t0, 420, (p) => { count.textContent = Math.round(fin * p).toLocaleString(); }, (q) => q);
+  rise(count, t0);
+});
+
+KIND.forEach((name, j) => {
+  const o = nK[j];
+  const rect = el("rect", { x: X1, y: o.y, width: BAR, height: 0, rx: 2, fill: KG[j] }, bars);
+  const cy = o.y + o.h / 2;
+  const lx = X1 + BAR + 14;
+  const line = text(lx, cy, "", { "dominant-baseline": "middle" });
+  const nameEl = el("tspan", { "font-size": 13 }, line);
+  nameEl.textContent = LBL[name];
+  const count = el("tspan", { dx: 10, "font-family": "Geist Mono, ui-monospace, monospace", "font-size": 12, fill: "#6f6e72" }, line);
+  count.textContent = "0";
+  const cut = text(lx, cy, "", { fill: "#000", stroke: "#000", "stroke-width": 3.5, "stroke-linejoin": "round", "paint-order": "stroke fill", "dominant-baseline": "middle" }, mask);
+  const cutName = el("tspan", { "font-size": 13 }, cut);
+  cutName.textContent = LBL[name];
+  const cutCount = el("tspan", { dx: 10, "font-family": "Geist Mono, ui-monospace, monospace", "font-size": 12 }, cut);
+  cutCount.textContent = "0";
+  const t0 = land(1, j);
+  const fin = sum(SK1, 1, name);
+  growBar(rect, o.y, o.h, t0);
+  rise(line, t0);
+  rise(cut, t0);
+  add(t0, 420, (p) => {
+    const shown = Math.round(fin * p).toLocaleString();
+    count.textContent = shown;
+    cutCount.textContent = shown;
+  }, (q) => q);
+});
+
+FIT.forEach((name, f) => {
+  const o = nF[f];
+  const tot = sum(SK2, 1, name);
+  const rect = el("rect", { x: X2, y: o.y, width: BAR, height: 0, rx: 2, fill: FC[f] }, bars);
+  const x = X2 + BAR + 14;
+  const lines = FL[f];
+  const y0 = o.y + o.h / 2 - 16 - (lines.length - 1) * 8;
+  const pct = text(x, y0, "0%", { "font-size": 22, "font-weight": 600 });
+  const labels = lines.map((line, i) => text(x, y0 + 22 + i * 17, line, { "font-size": 13, "font-weight": f === 2 ? 600 : 400 }));
+  const count = text(x, y0 + 22 + lines.length * 17, "0", { "font-family": "Geist Mono, ui-monospace, monospace", "font-size": 12, fill: "#6f6e72" });
+  const t0 = land(2, f);
+  growBar(rect, o.y, o.h, t0);
+  [pct, ...labels, count].forEach((node) => rise(node, t0));
+  add(t0, 420, (p) => {
+    pct.textContent = `${Math.round((tot / 2413) * 100 * p)}%`;
+    count.textContent = Math.round(tot * p).toLocaleString();
+  }, (q) => q);
+});
+
+/**
+ * A ribbon from one bar's edge to the next. It sweeps left to right under a clip.
+ * @param {Element} parent
+ * @param {number} x0
+ * @param {number} y0
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number} h
+ * @param {string} fill
+ * @param {number} opacity
+ * @param {number} t0
+ * @param {string} id
+ * @returns {void}
+ */
+function band(parent, x0, y0, x1, y1, h, fill, opacity, t0, id) {
+  const m = (x0 + x1) / 2;
+  const d = `M${x0} ${y0} C${m} ${y0},${m} ${y1},${x1} ${y1} L${x1} ${y1 + h} C${m} ${y1 + h},${m} ${y0 + h},${x0} ${y0 + h}Z`;
+  const path = el("path", { d, fill, "fill-opacity": opacity }, parent);
+  const clip = el("clipPath", { id }, defs);
+  const crect = el("rect", { x: x0 - 1, y: Math.min(y0, y1) - 2, width: 0, height: Math.abs(y1 - y0) + h + 4 }, clip);
+  path.setAttribute("clip-path", `url(#${id})`);
+  add(t0, 520, (p) => crect.setAttribute("width", ((x1 - x0 + 2) * p).toFixed(2)));
+}
+
+const fromSource = nS.map((n) => n.y);
+const intoKind = nK.map((n) => n.y);
+SRC.forEach((sn, i) => {
+  const rows = KIND.map((kn, j) => {
+    const row = SK1.find((r) => r[0] === sn && r[1] === kn);
+    return row ? { j, n: Number(row[2]) } : null;
+  }).filter(Boolean).sort((a, b) => b.n - a.n);
+  rows.forEach((row, rank) => {
+    const h = row.n * kScale;
+    band(ribbons1, X0 + BAR, fromSource[i], X1, intoKind[row.j], h, SG[i], 0.42, land(0, i) + rank * 28, `b1-${i}-${row.j}`);
+    fromSource[i] += h;
+    intoKind[row.j] += h;
+  });
+});
+
+const fromKind = nK.map((n) => n.y);
+const intoFit = nF.map((n) => n.y);
+KIND.forEach((kn, j) => {
+  const rows = FIT.map((fn, f) => {
+    const row = SK2.find((r) => r[0] === kn && r[1] === fn);
+    return row ? { f, n: Number(row[2]) } : null;
+  }).filter(Boolean).sort((a, b) => b.n - a.n);
+  rows.forEach((row, rank) => {
+    const h = row.n * kScale;
+    band(ribbons2, X1 + BAR, fromKind[j], X2, intoFit[row.f], h, FC[row.f], 0.55, land(1, j) + rank * 28, `b2-${j}-${row.f}`);
+    fromKind[j] += h;
+    intoFit[row.f] += h;
+  });
+});
+
+const TMAX = tracks.reduce((m, t) => Math.max(m, t.t0 + t.d), 0);
+let time = 0;
+let goal = 0;
+let last = 0;
+let raf = 0;
+let prevCenter = NaN;
+
+/**
+ * @param {number} now
+ * @returns {void}
+ */
+function paint(now) {
+  tracks.forEach((track) => {
+    const p = Math.min(1, Math.max(0, (now - track.t0) / track.d));
+    track.fn(p);
+  });
+}
+
+/**
+ * @param {number} now
+ * @returns {void}
+ */
+function tick(now) {
+  raf = 0;
+  const dt = Math.min(80, last ? now - last : 16);
+  last = now;
+  if (time !== goal) {
+    const step = dt * (goal > time ? 1 : -1);
+    time = step > 0 ? Math.min(goal, time + step) : Math.max(goal, time + step);
+  }
+  paint(time);
+  phaseEl.textContent = time <= 1 ? "Waiting" : time >= TMAX - 1 ? "Holding the finished chart" : goal > time ? "Playing the entrance" : "Playing the exit";
+  whereEl.textContent = `${(time / 1000).toFixed(2)}s of ${(TMAX / 1000).toFixed(2)}s`;
+  if (time !== goal) raf = requestAnimationFrame(tick);
+  else last = 0;
+}
+
+/**
+ * @param {number} next
+ * @returns {void}
+ */
+function go(next) {
+  goal = next;
+  if (!raf) raf = requestAnimationFrame(tick);
+}
+
+/** The title crosses this line, below the middle, before the title itself reaches center. */
+const LINE = 0.72;
+const titleEl = document.querySelector("#chart h2");
+
+/**
+ * The chart title is the marker, and the line sits below the middle of the screen.
+ * Scrolling down across it plays forward from the current frame.
+ * Scrolling up across that same line reverses from the current frame.
+ * Stopping between the two leaves the clock running toward whichever way it last turned.
+ * @returns {void}
+ */
+function measure() {
+  const rect = titleEl.getBoundingClientRect();
+  const line = window.innerHeight * LINE;
+  const y = rect.top + rect.height / 2;
+  const prev = prevCenter;
+  prevCenter = y;
+  if (Number.isNaN(prev) || y === prev) return;
+  const scrollingDown = y < prev;
+  const crossedDown = scrollingDown && prev > line && y <= line;
+  const crossedUp = !scrollingDown && prev <= line && y > line;
+  if (crossedDown) go(TMAX);
+  else if (crossedUp && time > 1) go(0);
+}
+
+paint(0);
+addEventListener("scroll", measure, { passive: true });
+addEventListener("resize", measure);
+measure();
+</script>
+</body>
+</html>

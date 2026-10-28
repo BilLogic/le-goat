@@ -22,7 +22,8 @@
   --hl-plate:#08090a;--hl-hi:#d0d6e0;--hl-edge:#5b5d64;--hl-mid:#3e3e44;--hl-lo:#29292d;--hl-lit:#6cc6e6;
   --sk-text:#d1d2d3;--sk-muted:#ababad;--sk-line:#35373b;--sk-link:#1d9bd1;--sk-react:#26292d;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--sans);-webkit-font-smoothing:antialiased;font-synthesis:none}
+@media (max-width:759px){.who,.sk-bar b,.cw-sk-bar b,.av,.xw-ws,.rs-who,.rs-av{font-weight:700}}
 .wrap{max-width:1120px;margin:0 auto;padding-inline:16px}
 .prose{max-width:620px;margin-inline:auto}
 .fig{max-width:860px;margin-inline:auto}
@@ -1824,11 +1825,7 @@ main>section.bt-off{display:none!important}
   #btSec .bt-tt{font-size:15px}
   #btSec .bt-tc{display:none}
   #btSec .bt-mcopy{display:block;min-height:44px;margin:0;text-align:left;font:15px/1.45 var(--sans);color:var(--ink-2);text-wrap:balance}
-  #btSec .cw-svg .cw-name{font-size:16px}
-  #btSec .cw-svg .cw-sub{font-size:11px}
-  #btSec .cw-svg .bt-nm{font-size:14px}
-  #btSec .cw-svg .bt-nt{font-size:13px}
-  #btSec .cw-svg .bt-gr{font-size:12.5px}
+  #btSec .cw-svg text{font-family:var(--sans)}
 }
 @media (prefers-reduced-motion:reduce){#btSec .bt-chg,#btSec .bt-chg.on,#btSec .bt-w,#btSec .bt-chg.on .bt-w,#btSec .bt-tc,#btSec [role="tab"]::before,#btSec .bt-pop,#btSec .bt-knob,#btSec .bt-trk,#btSec .bt-tile,#btSec .bt-gauge .brb-ndl,#btSec .bt-route,#btSec .bt-jev{transition:none}}
 
@@ -1956,6 +1953,7 @@ main>section.bt-off{display:none!important}
   box-shadow:0 1px 0 rgba(0,0,0,.02),0 30px 60px -36px rgba(0,0,0,.35)}
 .cw-sk-bar{flex:none;display:flex;gap:8px;align-items:baseline;padding:11px 16px;border-bottom:1px solid var(--sk-line);font-size:13px;color:var(--sk-muted)}
 .cw-sk-bar b{font-size:15px;font-weight:900;color:var(--sk-text)}
+@media (max-width:759px){.cw-sk-bar b,.sk-bar b,.who,.av,.rs-who,.rs-av{font-weight:700}}
 .cw-feed{position:relative;flex:1 1 auto;min-height:0;overflow:hidden}
 .cw-scroll{padding:8px 0 12px;will-change:transform}
 /* while it streams, the feed follows the newest line on a short ease-out; scrubbed moves follow the scroll exactly */
@@ -2612,7 +2610,7 @@ main>.cw-gap{display:none}
 :root{--w-text:620px;--w-fig:860px;--w-wide:1120px;--sp-p:24px;--sp-head:24px;--sp-block:64px;--sp-sub:64px;--sp-chap:128px;--chrome-h:0px;
   --pin-gap:clamp(40px,7svh,88px);--pin-cap-gap:40px;--stage-max-h:820px;
   --sp-kicker:8px;--sp-sub:12px;--sp-hp:24px;--sp-hf:40px;--sp-pf:40px;--sp-fc:24px;--sp-cap:6px}
-@media (max-width:759px){:root{--sp-block:48px;--sp-sub:48px;--sp-chap:96px}}
+@media (max-width:759px){:root{--sp-block:64px;--sp-sub:56px;--sp-chap:112px}}
 /* RHYTHM (from the GPT-6 page): sections space by their top only, so nothing stacks. A chapter opener (kicker + h2) sits
    --sp-chap under what came before; every other section --sp-block; paragraphs --sp-p apart; a heading --sp-head over its text */
 main>section{padding-block:var(--sp-block) 0}
@@ -2644,7 +2642,7 @@ main>#farmSec{padding-bottom:var(--sp-chap)}
 @media (prefers-reduced-motion:reduce){.toc,.toc a,.prog{transition:none}}
 .st h2{margin-bottom:var(--sp-head)}
 .st p{margin:0}.st p+p{margin-top:var(--sp-p)}
-@media (max-width:640px){#btSec,#rsSec{padding-top:64px}}
+@media (max-width:640px){#btSec,#rsSec{padding-top:96px;padding-bottom:40px}}
 /* reading text is left-aligned in the centered 620 column (one left edge from the first paragraph to the last caption);
    only the masthead, the controls and the short labels inside a full-screen pin are centered */
 #brbFig .brb-head{max-width:var(--w-text);margin-inline:auto;text-align:left}
@@ -2780,11 +2778,9 @@ html:not(.jn) .st-cwsub{display:none}
 }
 @media (max-width:759px){
   /* the MVP pipeline on phones: the pin fits the small viewport; captions wrap and the camera's world names read larger */
-  .cw-sec.cw-cam .cw-pin{height:100svh;padding:84px 16px 16px}
+  .cw-sec.cw-cam .cw-pin{height:100svh;padding:96px 16px 72px}
   .cw-sec.cw-cam .cw-caps{height:58px;margin-top:6px}
   .cw-sec.cw-cam .cw-cap{white-space:normal;font-size:20px;max-width:100%}
-  .cw-sec.cw-cam .cw-svg .cw-name{font-size:18px}
-  .cw-sec.cw-cam .cw-svg .cw-sub{font-size:11px}
   /* story-style taps: a held finger pauses, so no text selection or callout on the cards it lands on */
   #crRoot .cr-slide.is-active,.ds-pwin{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   /* A bot with manners' player: a snap stop per chapter, so one flick carries the page one chapter's band at most */
@@ -3359,8 +3355,8 @@ html.jn #cwA .cw-ttl p:not(.k){margin-top:16px}
 /* the stack's layer labels: v203's styles (font, weight, letter-spacing, colors) at one uniform ×1.2 */
 #cwA .cw-svg .cw-name{font-size:16.2px}
 #cwA .cw-svg .cw-sub{font-size:12px}
-#cwA.cw-cam .cw-svg .cw-name{font-size:21.6px}
-#cwA.cw-cam .cw-svg .cw-sub{font-size:13.2px}
+#cwA.cw-cam .cw-svg .cw-name{font-size:13.5px}
+#cwA.cw-cam .cw-svg .cw-sub{font-size:11px}
 /* the timer's highlight: room for the mark (4px either side of the words, a taller line) and air above and below, so the stroke is never clipped or touching the rows round it */
 .ds-wait{padding:14px 2px 12px}
 .ds-wait>.ds-hl{padding:3px 4px;line-height:1.4}
@@ -3848,9 +3844,13 @@ main>#cfSec{padding-top:max(0px,calc(var(--sp-chap) - var(--bar) - var(--pin-gap
 @media (prefers-reduced-motion:reduce){.mnr *,.mnr *::before{transition:none!important;animation:none!important}}
 
 /* phones: Before over After, each with its callout */
+@media (max-width:759px){
+  .mnr .sk-bar b,.mnr .who{font-weight:700}
+  .mnr .av{font-weight:700}
+}
 @media (max-width:699px){
   .mnr-stage{padding:14px 12px 0}
-  .mnr .case{grid-template-columns:minmax(0,1fr);gap:14px}
+  .mnr .case{grid-template-columns:minmax(0,1fr);gap:10px}
   .mnr .case:not(.on){display:none}
 }
 
@@ -4072,8 +4072,13 @@ function layout(){const cap=PH.matches?300:380;let h=0;
   K.forEach(k=>{k.el.classList.add('mz');h=Math.max(h,k.B.scroll.offsetHeight,k.A.scroll.offsetHeight);k.el.classList.remove('mz')});
   FH0=Math.min(Math.ceil(h),cap);root.style.setProperty('--fh',FH0+'px')}
 let FH0=300;
-function fitFh(){const s=$('.mnr-stage'),n=$('.fp-nav'),c=$('.fp-cap');if(!s||!n||!c||!root.classList.contains('fp-sc'))return;let fh=FH0;root.style.setProperty('--fh',fh+'px');
-  for(let i=0;i<4;i++){const over=s.offsetHeight+n.offsetHeight+c.offsetHeight+parseFloat(getComputedStyle(root).paddingTop)+10-innerHeight;if(over<=0)break;fh=Math.max(110,fh-Math.ceil(over/(root.querySelectorAll('.case.on .col').length>1&&s.querySelector('.case.on .col.a').offsetTop>s.querySelector('.case.on .col.b').offsetTop+20?2:1)));root.style.setProperty('--fh',fh+'px')}}
+function fitFh(){const s=$('.mnr-stage'),n=$('.fp-nav'),c=$('.fp-cap');if(!s||!n||!c)return;
+  const phone=matchMedia('(max-width:759px)').matches;if(!phone&&!root.classList.contains('fp-sc'))return;
+  const title=document.querySelector('#dsMobile .ds-mtitle'),chrome=phone?72:0,titleH=phone&&title?title.offsetHeight+12:0,budget=innerHeight-chrome-titleH;
+  let fh=FH0;root.style.setProperty('--fh',fh+'px');
+  for(let i=0;i<6;i++){const over=s.offsetHeight+n.offsetHeight+c.offsetHeight+parseFloat(getComputedStyle(root).paddingTop)+8-budget;if(over<=0)break;
+    const on=s.querySelector('.case.on'),ba=on&&on.querySelector('.col.b'),aa=on&&on.querySelector('.col.a'),stacked=!!(ba&&aa&&aa.offsetTop>ba.offsetTop+20);
+    fh=Math.max(72,fh-Math.ceil(over/(stacked?2:1)));root.style.setProperty('--fh',fh+'px')}}
 
 let cur=-1;
 function enter(i){cur=i;K.forEach((k,j)=>tog(k.el,'on',j===i));const k=K[i];
@@ -4088,6 +4093,7 @@ function show(i,t,ms,was){
 
 layout();
 fpPlayer(root,{label:'Four manners',steps:K.map(k=>({h:k.c.h,p:k.c.p,ms:k.t.end,act:k.t.c0+T.mark2})),show,scrub:false,host,fit:()=>fitFh()});
+fitFh();
 const relayout=()=>{layout();fitFh();if(cur<0)return;if(root._fp.pos){K.forEach(k=>{k.B.mk=null;k.A.mk=null});root._fp.repaint();return}const k=K[cur],st=root._fp.state();[k.B,k.A].forEach(o=>{o.mk=null});
   if(st.reduce||st.t>=k.t.end)show(cur,Infinity);else{markOn(k.B,[],false);markOn(k.A,[],false);paint(k,st.t)}};
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(relayout);
@@ -4884,7 +4890,7 @@ const SKR=(()=>{const O={dur:1,col:60,node:40,band:30,sweep:600};let M=null,raf=
     const rise=(e,t0)=>add(t0,300,p=>e.setAttribute('style',`opacity:${p.toFixed(3)};transform:translate(0px,${((1-p)*4).toFixed(2)}px)`),()=>e.removeAttribute('style'));
     const land=(c,i)=>120+c*3.5*O.col+i*O.node+350;
     // 1 · scaffold: a thin rail down each column, and its heading, left to right
-    [0,1,2].forEach(c=>{const r0=R.nodes[c][0]&&R.nodes[c][0].r,x=r0?+r0.getAttribute('x')+(+r0.getAttribute('width'))/2:X[c]+W/2,n=R.nodes[c].length,ln=mk('line',{x1:x,x2:x,y1:TOP,y2:TOP+H,stroke:cs.getPropertyValue('--line-2').trim(),'stroke-width':1,'stroke-dasharray':H,'stroke-dashoffset':H},tmp);
+    [0,1,2].forEach(c=>{const colN=R.nodes[c];if(!colN.length)return;const r0=colN[0].r,x=+r0.getAttribute('x')+(+r0.getAttribute('width'))/2,n=colN.length,ln=mk('line',{x1:x,x2:x,y1:TOP,y2:TOP+H,stroke:cs.getPropertyValue('--line-2').trim(),'stroke-width':1,'stroke-dasharray':H,'stroke-dashoffset':H},tmp);
       add(c*O.col,300,p=>ln.setAttribute('stroke-dashoffset',(H*(1-p)).toFixed(1)),()=>{});
       // the rail steps away once its bars stand on it, at twice the pace it came in
       add(land(c,n-1)+80,150,p=>ln.setAttribute('opacity',(1-p).toFixed(3)),()=>{},q=>q);
@@ -4919,7 +4925,7 @@ const SKR=(()=>{const O={dur:1,col:60,node:40,band:30,sweep:600};let M=null,raf=
    * @param {number} next
    * @returns {void}
    */
-  function go(next){if(!M||M.s.dataset.narrow==='true'||reduce||document.documentElement.classList.contains('jn'))return;
+  function go(next){if(!M||reduce||document.documentElement.classList.contains('jn'))return;
     if(!tracks){tracks=plan();time=0;sample(0)}
     M.s.style.visibility='';played=true;goal=Math.max(0,Math.min(tmax(),next));if(!raf){last=0;raf=requestAnimationFrame(tick)}}
   /**
@@ -4931,21 +4937,28 @@ const SKR=(()=>{const O={dur:1,col:60,node:40,band:30,sweep:600};let M=null,raf=
     time=step>0?Math.min(goal,time+step):Math.max(goal,time+step);sample(time);
     if(time!==goal)raf=requestAnimationFrame(tick);else last=0}
   /** Replay from empty to the finished chart. @returns {void} */
-  function play(){if(!M||M.s.dataset.narrow==='true')return;finish();if(reduce)return;go(Infinity)}
+  function play(){if(!M)return;finish();if(reduce)return;go(Infinity)}
   /**
    * The diagram's own center is the line. Scrolling down across it plays the chart and keeps it.
    * Scrolling back up across that center reverses it. Scrolling on past does not.
    * @returns {void}
    */
-  function measure(){if(!M||reduce||M.s.dataset.narrow==='true')return;const rect=M.s.getBoundingClientRect();if(!rect.height)return;
-    const mid=innerHeight/2,center=rect.top+rect.height/2,prevC=prevCenter;prevCenter=center;
-    if(Number.isNaN(prevC)||center===prevC)return;const down=center<prevC;
-    if(down&&prevC>mid&&center<=mid)go(Infinity);
-    else if(!down&&prevC<=mid&&center>mid&&time>1)go(0)}
+  /** The chart title crosses this line, still below the middle of the screen. */
+  const LINE=0.72,titleEl=document.querySelector('section[data-proto="sankey"] h3');
+  /**
+   * The title is the marker. Scrolling down across the line plays forward from the current frame.
+   * Scrolling up across that same line reverses from the current frame.
+   * @returns {void}
+   */
+  function measure(){if(!M||reduce||document.documentElement.classList.contains('jn'))return;const rect=(titleEl||M.s).getBoundingClientRect();if(!rect.height)return;
+    const line=innerHeight*LINE,y=rect.top+rect.height/2,prev=prevCenter;prevCenter=y;
+    if(Number.isNaN(prev)||y===prev)return;const down=y<prev;
+    if(down&&prev>line&&y<=line)go(Infinity);
+    else if(!down&&prev<=line&&y>line&&time>1)go(0)}
   function set(m){finish();M=m;prevCenter=NaN;const s=m.s;s._reveal=API;// test hook
     if(!armed){armed=true;if(reduce)return;
       s.style.visibility='hidden';
-      replayOn(s.parentNode,()=>{if(!played)measure()},()=>{if(reduce||M.s.dataset.narrow==='true')return;finish();played=false;s.style.visibility='hidden';prevCenter=NaN},.3);
+      replayOn(s.parentNode,()=>{if(!played)measure()},()=>{if(reduce||document.documentElement.classList.contains('jn'))return;finish();played=false;s.style.visibility='hidden';prevCenter=NaN},.3);
       ['pointerenter','pointerdown'].forEach(t=>s.addEventListener(t,()=>{if(tracks&&time<tmax()-1){time=goal=tmax();sample(time)}}));
       document.addEventListener('visibilitychange',()=>{if(!document.hidden&&tracks&&time!==goal){last=0;raf=requestAnimationFrame(tick)}});
       addEventListener('scroll',measure,{passive:true});
@@ -4967,14 +4980,16 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
     tone=(cs,lo,hi)=>{const mn=Math.min(...cs),mx=Math.max(...cs);return cs.map(c=>lo+(hi-lo)*(mx===mn?1:(c-mn)/(mx-mn)))};
   const SG=tone(SRC.map(n=>sum(SK1,0,n)),30,88).map(pc=>mix(v('--ink-2'),pc)),KG=tone(KIND.map(n=>sum(SK1,1,n)),26,84).map(pc=>mix(v('--ink-2'),pc));
   const FC=tone(FIT.map(n=>sum(SK2,1,n)),30,100).map(pc=>mix(v('--teal-ink'),pc));
-  // phones get two columns plus a bar for where it arrived; the desktop gets all three as flows
+  // phones keep the same two-stage flow, with the names in their own columns so nothing collides
   const narrow=SKN();s.dataset.narrow=narrow;
   // drawn at 1:1 so the type stays at its set size: the width follows the frame, the gutters stay fixed, the kinds stay centred
   const cw=s.parentNode.clientWidth-parseFloat(getComputedStyle(s.parentNode).paddingLeft)*2;
-  const VW=narrow?Math.max(280,Math.round(cw)):Math.max(MINW,Math.round(cw)),VH=narrow?650:690;s.setAttribute('viewBox',`0 0 ${VW} ${VH}`);s.style.width=VW+'px';s.dataset.w=VW;
-  // equal outer gutters; middle column a touch left of center so kind labels (to its right) have room before the outcome %s
+  const VW=narrow?Math.max(300,Math.round(cw)):Math.max(MINW,Math.round(cw));
+  let labelW=0,outW=0;
+  if(narrow){labelW=Math.round(Math.min(124,Math.max(96,VW*.4)));outW=Math.round(Math.min(108,Math.max(88,VW*.32)));while(labelW+outW+52>VW){labelW-=2;outW-=2}}
   const GL=VW<820?112:VW<1000?132:156,GR=GL;
-  const TOP=narrow?122:34,H=narrow?520:630,W=10,X=narrow?[0,146,VW-86]:[GL,0,VW-GR-W];if(!narrow)X[1]=Math.round((X[0]+X[2])/2)-36;
+  let TOP=narrow?92:34,H=narrow?540:630,VH=narrow?TOP+H+24:690,W=10,X=narrow?[0,6+labelW,VW-6-outW-W]:[GL,0,VW-GR-W];if(!narrow)X[1]=Math.round((X[0]+X[2])/2)-36;
+  s.setAttribute('viewBox',`0 0 ${VW} ${VH}`);s.style.width=VW+'px';s.dataset.w=VW;
   const FL=narrow?[["Didn't",'need me'],['Needed only','my sign-off'],['Needed me']]:[["Didn't need me"],['Needed only','my sign-off'],['Needed me']];// framed by what needed me: le goat isn't introduced yet
   // plainer names for the corpus categories; the data keeps its own keys
   const LBL={"Where it is":"Where to find something","A fact":"A quick fact","How it works here":"How we do things here","Status or past decision":"Status or a past decision","Who to ask":"Who to ask","Which source is true":"Which version is right","How to hand off":"How to hand off work","Is this design right":"Feedback on a design","Access":"Getting access"};
@@ -4983,6 +4998,10 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   const GS=[[SRC,30],[KIND,16],[FIT,30]],k=Math.min(...GS.map(([n,g])=>(H-g*(n.length-1))/2413));
   const col=(names,tot,gap)=>{let y=TOP+(H-(2413*k+gap*(names.length-1)))/2;return names.map(n=>{const h=tot(n)*k;const o={y,h,k};y+=h+gap;return o})};
   const nS=col(SRC,n=>sum(SK1,0,n),30),nK=col(KIND,n=>sum(SK1,1,n),16),nF=col(FIT,n=>sum(SK2,1,n),30);const out={},inn={};
+  // phones: each kind keeps a slot tall enough for its wrapped name, and the outcomes share that same span
+  if(narrow){const fs=11,lh=13,wrap=(t,maxW)=>{const max=Math.max(8,Math.floor(maxW/(fs*.54))),words=t.split(' '),lines=[];let cur='';words.forEach(w=>{const n=cur?cur+' '+w:w;if(cur&&n.length>max){lines.push(cur);cur=w}else cur=n});if(cur)lines.push(cur);return lines};
+    let y=TOP;nK.forEach((o,j)=>{const lines=wrap(LBL[KIND[j]],labelW-12),need=Math.max(o.h,lines.length*lh+6);o.lines=lines;o.y=y+(need-o.h)/2;o.slot=need;y+=need+8});
+    const span=y-8-TOP,totalF=nF.reduce((t,o)=>t+o.h,0)+18*(nF.length-1);let yy=TOP+Math.max(0,(span-totalF)/2);nF.forEach(o=>{o.y=yy;yy+=o.h+18});H=span;VH=TOP+H+16;s.setAttribute('viewBox',`0 0 ${VW} ${VH}`)}
   const flows=[];const R={heads:[],nodes:[[],[],[]],bands:[]};// what the entry reveal moves (SKR)
   const band=(x0,y0,x1,y1,h,fill,op,meta)=>{const m=(x0+x1)/2;const p=mk('path',{d:`M${x0} ${y0} C${m} ${y0},${m} ${y1},${x1} ${y1} L${x1} ${y1+h} C${m} ${y1+h},${m} ${y0+h},${x0} ${y0+h}Z`,fill,'fill-opacity':op},s);Object.assign(p.dataset,meta);p.dataset.op=op;flows.push(p);R.bands.push({p,g:{x0,y0,x1,y1,h},c:'s' in meta?0:1,i:'s' in meta?meta.s:meta.k});return p};
   // stage 1: source → kind, in kind order so bands don't cross needlessly
@@ -4992,34 +5011,38 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   const xOut=X[1]+W;
   const oK=nK.map(n=>n.y),iF=nF.map(n=>n.y);
   KIND.forEach((kn,j)=>FIT.forEach((fn,f)=>{const r=SK2.find(r=>r[0]===kn&&r[1]===fn);if(!r)return;const h=r[2]*k;const p=band(xOut,oK[j],X[2],iF[f],h,FC[f],.55,{k:j,f});mk('title',{},p).textContent=`${LBL[kn]} → ${FL[f].join(' ')}: ${r[2].toLocaleString()}`;oK[j]+=h;iF[f]+=h}));
-  const txt=(x,y,t,o={})=>{const e=mk('text',Object.assign({x,y,'font-size':13,fill:v('--ink'),'font-family':'Geist'},o),s);e.textContent=t;return e};
-  const head=(x,t,anchor,y=16)=>txt(x,y,t,{'font-size':12,'font-family':'Geist','letter-spacing':'0',fill:v('--ink-3'),'text-anchor':anchor});
-  if(narrow){const hd=(x,y,t,a)=>txt(x,y,t,{'font-size':12,'font-weight':500,fill:v('--ink-3'),'text-anchor':a});
-    hd(0,12,'Where it arrived','start');let x=0;const gp=3,bw=VW-gp*2;
-    /* one bar split by where it arrived; the last name sits flush right, under its own end */
-    SRC.forEach((n,i)=>{const c=sum(SK1,0,n),w=c/2413*bw,a=i===2?'end':'start',lx=i===2?x+w:x;mk('rect',{x,y:22,width:w,height:10,rx:2,fill:SG[i]},s);
-      txt(lx,52,n,{'font-size':12,'text-anchor':a});txt(lx,67,c.toLocaleString(),{'font-size':11,'font-family':'Geist Mono',fill:v('--ink-3'),'text-anchor':a});x+=w+gp});
-    hd(X[1]+W,TOP-18,'Kind of ask','start');hd(X[2],TOP-18,'What it needed','start')}
+  const FF='Geist, ui-sans-serif, system-ui, sans-serif',FM='Geist Mono, ui-monospace, Menlo, monospace';
+  const txt=(x,y,t,o={})=>{const e=mk('text',Object.assign({x,y,'font-size':13,fill:v('--ink'),'font-family':FF},o),s);e.textContent=t;return e};
+  const head=(x,t,anchor,y=16)=>txt(x,y,t,{'font-size':12,'font-family':FF,'letter-spacing':'0',fill:v('--ink-3'),'text-anchor':anchor});
+  if(narrow){const hd=(x,y,t,a)=>txt(x,y,t,{'font-size':11,'font-weight':500,fill:v('--ink-3'),'text-anchor':a,'font-family':FF});
+    hd(0,14,'Where it arrived','start');let x=0;const gp=3,bw=VW-gp*2;
+    /* one bar split by where it arrived; a name only when its own segment can hold it */
+    SRC.forEach((n,i)=>{const c=sum(SK1,0,n),w=c/2413*bw,a=i===2?'end':'start',lx=i===2?x+w:x;mk('rect',{x,y:24,width:Math.max(2,w),height:10,rx:2,fill:SG[i]},s);
+      txt(lx,50,n,{'font-size':10,'text-anchor':a,'font-family':FF});
+      txt(lx,64,c.toLocaleString(),{'font-size':11,'font-family':FM,fill:v('--ink-3'),'text-anchor':a});x+=w+gp});
+    R.heads=[null,hd(X[1]-6,TOP-14,'Kind of ask','end'),hd(X[2]+W+6,TOP-14,'What it needed','start')]}
   else{R.heads=[head(X[0]+W/2,'Where it arrived','middle'),head(X[1]+W/2,'Kind of ask','middle'),head(X[2]+W/2,'What it needed','middle')]}
   if(!narrow)SRC.forEach((n,i)=>{const o=nS[i];const r=mk('rect',{x:X[0],y:o.y,width:W,height:o.h,rx:2,fill:SG[i]},s);const a=txt(X[0]-12,o.y+o.h/2-2,n,{'text-anchor':'end'});const b=txt(X[0]-12,o.y+o.h/2+15,sum(SK1,0,n).toLocaleString(),{'text-anchor':'end','font-size':12,'font-family':'Geist Mono',fill:v('--ink-3')});R.nodes[0].push({r,t:[a,b],n:[b]})});
   const kindEls=KIND.map((n,j)=>{const o=nK[j];const g=mk('g',{style:'cursor:default','data-k':j},s);const r=mk('rect',{x:X[1],y:o.y,width:W,height:Math.max(2,o.h),rx:2,fill:KG[j]},g);
     // name and count sit just to the right of the bar; the halo keeps them readable where a ribbon passes behind
-    const lx=X[1]+W+(narrow?8:12),ay=o.y+o.h/2-(narrow?1:2),by=o.y+o.h/2+(narrow?12:13);
-    const a=txt(lx,ay,LBL[n],{'text-anchor':'start','font-size':narrow?12:13,class:'sk-kind'});a.parentNode===s&&g.appendChild(a);
-    const b=txt(lx,by,sum(SK1,1,n).toLocaleString(),{'text-anchor':'start','font-size':narrow?11:12,'font-family':'Geist Mono',fill:v('--ink-3'),class:'sk-kind'});b.parentNode===s&&g.appendChild(b);R.nodes[1].push({r,t:[a,b],n:[b]});return g});
+    const lx=narrow?X[1]-6:X[1]+W+12,ay=narrow?o.y+o.h/2-((o.lines.length-1)*13)/2:o.y+o.h/2-2,by=narrow?ay+o.lines.length*13+1:o.y+o.h/2+15;
+    const a=txt(lx,ay,narrow?'':LBL[n],{'text-anchor':narrow?'end':'start','font-size':narrow?11:13,class:narrow?'':'sk-kind','font-family':FF});
+    if(narrow)o.lines.forEach((line,i)=>{const ts=mk('tspan',{x:lx,dy:i?13:0},a);ts.textContent=line});
+    a.parentNode===s&&g.appendChild(a);
+    const b=txt(lx,by,sum(SK1,1,n).toLocaleString(),{'text-anchor':narrow?'end':'start','font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3'),class:narrow?'':'sk-kind'});b.parentNode===s&&g.appendChild(b);R.nodes[1].push({r,t:[a,b],n:[b]});return g});
   FIT.forEach((n,f)=>{const o=nF[f],tot=sum(SK2,1,n),hi=f===2;const r=mk('rect',{x:X[2],y:o.y,width:W,height:o.h,rx:2,fill:FC[f]},s);const cy=o.y+o.h/2;
-    const L=FL[f],fs=narrow?11.5:13,lh=narrow?14:17,big=narrow?20:28,x=X[2]+W+(narrow?8:14),y0=cy-(L.length-1)*lh/2-(narrow?2:8);
-    const pc=txt(x,y0,Math.round(tot/24.13)+'%',{'font-size':big,'font-weight':600,'letter-spacing':'-1'});
-    const ls=L.map((l,i)=>txt(x,y0+(narrow?17:21)+i*lh,l,{'font-size':fs,'font-weight':hi?600:400})),ct=txt(x,y0+(narrow?17:21)+L.length*lh,tot.toLocaleString(),{'font-size':narrow?10.5:12,'font-family':'Geist Mono',fill:v('--ink-3')});R.nodes[2].push({r,t:[pc,...ls,ct],n:[pc,ct]})});
+    const L=FL[f],fs=narrow?11:13,lh=narrow?16:17,big=narrow?16:28,x=X[2]+W+(narrow?6:14),y0=cy-(L.length-1)*lh/2-(narrow?12:8);
+    const pc=txt(x,y0,Math.round(tot/24.13)+'%',{'font-size':big,'font-weight':600,'letter-spacing':'-.04em','font-family':FF});
+    const ls=L.map((l,i)=>txt(x,y0+(narrow?18:21)+i*lh,l,{'font-size':fs,'font-weight':hi?600:400,'font-family':FF})),ct=txt(x,y0+(narrow?18:21)+L.length*lh,tot.toLocaleString(),{'font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3')});R.nodes[2].push({r,t:[pc,...ls,ct],n:[pc,ct]})});
   // point at a kind of ask to follow it through both stages
   const reset=()=>flows.forEach(p=>p.setAttribute('fill-opacity',p.dataset.op));
   const focus=j=>flows.forEach(p=>p.setAttribute('fill-opacity',+p.dataset.k===j?Math.min(.95,+p.dataset.op+.3):.08));
   kindEls.forEach((g,j)=>{g.addEventListener('pointerenter',()=>focus(j));g.addEventListener('pointerleave',reset)});
   flows.forEach(p=>{p.addEventListener('pointerenter',()=>focus(+p.dataset.k));p.addEventListener('pointerleave',reset)});
   s.dataset.x0=X[0];s.dataset.x1=X[1];s.dataset.x2=X[2];s.dataset.band=xOut;
-  if(!narrow)SKR.set({s,X,W,TOP,H,R});else{SKR.finish();s.style.visibility=''}}
+  SKR.set({s,X,W,TOP,H,R})}
 sankey();
-new ResizeObserver(()=>{const sv=$('#sankey'),cw=sv.parentNode.clientWidth-2*parseFloat(getComputedStyle(sv.parentNode).paddingLeft),n=SKN();if(String(n)!==sv.dataset.narrow||Math.abs((n?Math.max(280,cw):Math.max(MINW,cw))-sv.dataset.w)>4)sankey()}).observe($('#sankey').parentNode);
+new ResizeObserver(()=>{const sv=$('#sankey'),cw=sv.parentNode.clientWidth-2*parseFloat(getComputedStyle(sv.parentNode).paddingLeft),n=SKN();if(String(n)!==sv.dataset.narrow||Math.abs((n?Math.max(300,cw):Math.max(MINW,cw))-sv.dataset.w)>4)sankey()}).observe($('#sankey').parentNode);
 // redraw whenever the figure crosses the phone width, however the frame was resized
 
 
@@ -7246,7 +7269,7 @@ const cwKit=(()=>{
     /* phones: a camera on the world. o.cam names the world point to center and the width (and height) that must fit; it pans
        between the stack and the window as the ask moves, so both read at phone size */
     let lp=0;const cam=()=>mqN.matches&&o.cam&&refs;
-    function camAt(p){const c=o.cam(refs,p),s=Math.min(stage.clientWidth/c.w,stage.clientHeight/c.h,1.2);refs.world.style.setProperty('--cw-s',f(s*100)/100);
+    function camAt(p){const c=o.cam(refs,p),s=Math.min(stage.clientWidth/c.w,stage.clientHeight/c.h,4);refs.world.style.setProperty('--cw-s',f(s*100)/100);
       refs.world.style.transform=`translate(${f((o.WW/2-c.x)*s)}px,${f((o.WH/2-c.y)*s)}px) scale(${(s).toFixed(4)})`}
     // Story: the pin opens with a lead-in (o.lead of its length) where the cloned Sankey holds and dissolves; the captions run
     // on cq, which spends the lead-in in [-.06, 0] so the Sankey's line can hand over to the title before q starts
@@ -7766,10 +7789,15 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
       ['worker',S.worker,1,b.session,1],['session',S.session,1,b.model,1],['model',S.model,1,b.tools,1],['tools',S.tools,1,b.write,1],['write',S.write,1,b.close,1],['close',S.close,1,b.exit,1],['exit',S.exit,1,1,1]]}};
   /* phones: where the camera looks. The window from the start (phones open at the handoff) through the typed ask, and again while the reply
      comes back (it follows the window as it is carried to the middle); the stack while the ask runs down it */
+  /* phones: the camera frames the same window the wide layout moves and scales. While the ask runs the stack,
+     it looks at the stack; once the reply is the subject, it frames that window. A phone stage cannot hold the
+     whole reply at reading size, so the pull-back stops a little taller than the reading card instead of shrinking
+     the column to a hairline. */
   const cam=(r,q)=>{const pan=a=>eio(sg(q,a,a+.025)),w=clamp(1-pan(TB.worker)+pan(TB.write),0,1);
-    const W=r.win,L=W&&W.el.style.left?parseFloat(W.el.style.left):CW.x,wc=L+CW.w*(W&&W._z||1)/2;
-    const z=W&&W._z||1,hv=W&&W._hv||CW.h;/* pulled back to the whole reply, the camera fits the window's own box */
-    return{x:lerp(202,wc,w),y:WH/2,w:lerp(420,CW.w*z+24,w),h:lerp(600,Math.max(CW.h,hv)+28,w)}};
+    const W=r.win,z=W&&W._z||1,hv=W&&W._hv||CW.h;
+    const L=W&&W.el.style.left?parseFloat(W.el.style.left):CW.x,T=W&&W.el.style.top?parseFloat(W.el.style.top):CW.y;
+    const ww=CW.w*z,cap=ww*(CW.h/CW.w)*1.15,fh=Math.min(hv,cap),top=T+Math.max(0,(hv-fh)/2),pad=28*(fh/CW.h);
+    return{x:lerp(202,L+ww/2,w),y:lerp(WH/2,top+fh/2,w),w:lerp(420,ww+pad,w),h:lerp(600,fh+pad,w)}};
   /* r19 runway (screens per beat, desktop; phones x1.3): the old step model spent 8 zones x .6 = 4.8 screens on these. [segment, screens, tag]; null = hold */
   const RUNWAY=[['hold',.5],['hl',.6],[null,.5,'hl53'],['dissolve',.7],['gather',.5],['handoff',.4],['ask',.9],['stack',1],['worker',1],['session',1],['model',1],['tools',1],['write',1.6],[null,.5,'reply639'],['close',.5],['exit',1],[null,.5]];
   drive(sec,{WW,WH,CWW:CW.w,build,render,caps:capsFor,auto:AUTO,scrub:true,runway:RUNWAY,remeasure:r=>{r.placed=0},cam,q0:TB.ask,/* phones open with the window in and the composer ready */

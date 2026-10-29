@@ -112,6 +112,7 @@ main section[data-proto="sankey"]>figure{width:min(1120px,calc(100% - 32px));max
 [hidden]{display:none!important}
 .sankey-wrap text{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
 .sankey-wrap text.sk-kind{stroke-width:7px}
+#sankey text.sk-kind{stroke:none}
 .sk{font-family:var(--slack);color:var(--sk-text);background:var(--surface);border:1px solid var(--sk-line);border-radius:12px;overflow:hidden;box-shadow:0 18px 40px -30px rgba(0,0,0,.35)}
 .sk-bar{display:flex;align-items:baseline;gap:8px;padding:11px 16px;border-bottom:1px solid var(--sk-line);font-size:13px;color:var(--sk-muted)}
 .sk-bar b{font-size:15px;font-weight:900;color:var(--sk-text)}
@@ -4990,12 +4991,16 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   const narrow=SKN();s.dataset.narrow=narrow;
   // drawn at 1:1 so the type stays at its set size: the width follows the frame, the gutters stay fixed, the kinds stay centred
   const cw=s.parentNode.clientWidth-parseFloat(getComputedStyle(s.parentNode).paddingLeft)*2;
-  const VW=narrow?Math.max(300,Math.round(cw)):Math.max(MINW,Math.round(cw));
+  const VW=narrow?Math.max(240,Math.round(cw)):Math.max(MINW,Math.round(cw));
   let labelW=0,outW=0;
-  if(narrow){outW=Math.round(Math.min(112,Math.max(92,VW*.3)));labelW=Math.round(Math.min(150,Math.max(108,VW*.46)))}
+  if(narrow){outW=Math.round(Math.min(96,Math.max(78,VW*.24)));labelW=Math.round(Math.min(150,Math.max(108,VW*.46)))}
   const GL=VW<820?112:VW<1000?132:156,GR=GL;
-  let TOP=narrow?92:34,H=narrow?540:630,VH=narrow?TOP+H+24:690,W=10,X=narrow?[0,6,VW-6-outW-W]:[GL,0,VW-GR-W];if(!narrow)X[1]=Math.round((X[0]+X[2])/2)-36;
-  const nameW=narrow?Math.max(88,Math.min(labelW,Math.round((X[2]-(X[1]+W)-16)*.62))):0;
+  // phones: each kind's name sits in a tile right of its bar, and the ribbons leave from the tile's far edge
+  const nameW=narrow?Math.max(92,Math.min(160,Math.round(VW*.36))):0;
+  let TOP=narrow?92:34,H=narrow?540:630,VH=narrow?TOP+H+24:690,W=10,X=narrow?[0,4,VW-6-outW-W]:[GL,0,VW-GR-W];
+  // wide: each kind is a tile holding its name, left of its bar; stage 1 ends at the tile, stage 2 leaves the bar, and the
+  // two ribbon spans are equal so the columns sit evenly
+  const LANE=narrow?0:176,LANEN=narrow?nameW+16:0;if(!narrow)X[1]=X[0]+W+Math.round((X[2]-X[0]-2*W-LANE)/2)+LANE;
   s.setAttribute('viewBox',`0 0 ${VW} ${VH}`);s.style.width=VW+'px';s.dataset.w=VW;
   const FL=narrow?[["Didn't",'need me'],['Needed only','my sign-off'],['Needed me']]:[["Didn't need me"],['Needed only','my sign-off'],['Needed me']];// framed by what needed me: le goat isn't introduced yet
   // plainer names for the corpus categories; the data keeps its own keys
@@ -5013,9 +5018,9 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   const band=(x0,y0,x1,y1,h,fill,op,meta)=>{const m=(x0+x1)/2;const p=mk('path',{d:`M${x0} ${y0} C${m} ${y0},${m} ${y1},${x1} ${y1} L${x1} ${y1+h} C${m} ${y1+h},${m} ${y0+h},${x0} ${y0+h}Z`,fill,'fill-opacity':op},s);Object.assign(p.dataset,meta);p.dataset.op=op;flows.push(p);R.bands.push({p,g:{x0,y0,x1,y1,h},c:'s' in meta?0:1,i:'s' in meta?meta.s:meta.k});return p};
   // stage 1: source → kind, in kind order so bands don't cross needlessly
   const oS=nS.map(n=>n.y),iK=nK.map(n=>n.y);
-  if(!narrow)SRC.forEach((sn,i)=>KIND.forEach((kn,j)=>{const r=SK1.find(r=>r[0]===sn&&r[1]===kn);if(!r)return;const h=r[2]*k;const p=band(X[0]+W,oS[i],X[1],iK[j],h,SG[i],.42,{k:j,s:i});mk('title',{},p).textContent=`${sn} → ${LBL[kn]}: ${r[2].toLocaleString()}`;oS[i]+=h;iK[j]+=h}));
+  if(!narrow)SRC.forEach((sn,i)=>KIND.forEach((kn,j)=>{const r=SK1.find(r=>r[0]===sn&&r[1]===kn);if(!r)return;const h=r[2]*k;const p=band(X[0]+W,oS[i],X[1]-LANE,iK[j],h,SG[i],.42,{k:j,s:i});mk('title',{},p).textContent=`${sn} → ${LBL[kn]}: ${r[2].toLocaleString()}`;oS[i]+=h;iK[j]+=h}));
   // stage 2: kind → what it needed. Ribbons leave the bar itself, so the column stays a thin bar and the names sit beside the flow.
-  const xOut=X[1]+W;
+  const xOut=X[1]+W+LANEN;
   const oK=nK.map(n=>n.y),iF=nF.map(n=>n.y);
   KIND.forEach((kn,j)=>FIT.forEach((fn,f)=>{const r=SK2.find(r=>r[0]===kn&&r[1]===fn);if(!r)return;const h=r[2]*k;const p=band(xOut,oK[j],X[2],iF[f],h,FC[f],.55,{k:j,f});mk('title',{},p).textContent=`${LBL[kn]} → ${FL[f].join(' ')}: ${r[2].toLocaleString()}`;oK[j]+=h;iF[f]+=h}));
   const FF='Geist, ui-sans-serif, system-ui, sans-serif',FM='Geist Mono, ui-monospace, Menlo, monospace';
@@ -5027,16 +5032,17 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
     SRC.forEach((n,i)=>{const c=sum(SK1,0,n),w=c/2413*bw,a=i===2?'end':'start',lx=i===2?x+w:x;mk('rect',{x,y:24,width:Math.max(2,w),height:10,rx:2,fill:SG[i]},s);
       txt(lx,50,n,{'font-size':10,'text-anchor':a,'font-family':FF});
       txt(lx,64,c.toLocaleString(),{'font-size':11,'font-family':FM,fill:v('--ink-3'),'text-anchor':a});x+=w+gp});
-    R.heads=[null,hd(X[1]+W+8,TOP-14,'Kind of ask','start'),hd(X[2]+W+6,TOP-14,'What it needed','start')]}
-  else{R.heads=[head(X[0]+W/2,'Where it arrived','middle'),head(X[1]+W/2,'Kind of ask','middle'),head(X[2]+W/2,'What it needed','middle')]}
+    R.heads=[null,hd(X[1],TOP-14,'Kind of ask','start'),hd(X[2]+W+6,TOP-14,'What it needed','start')]}
+  else{R.heads=[head(X[0]+W/2,'Where it arrived','middle'),head(X[1]+(W-LANE)/2,'Kind of ask','middle'),head(X[2]+W/2,'What it needed','middle')]}
   if(!narrow)SRC.forEach((n,i)=>{const o=nS[i];const r=mk('rect',{x:X[0],y:o.y,width:W,height:o.h,rx:2,fill:SG[i]},s);const a=txt(X[0]-12,o.y+o.h/2-2,n,{'text-anchor':'end'});const b=txt(X[0]-12,o.y+o.h/2+15,sum(SK1,0,n).toLocaleString(),{'text-anchor':'end','font-size':12,'font-family':'Geist Mono',fill:v('--ink-3')});R.nodes[0].push({r,t:[a,b],n:[b]})});
-  const kindEls=KIND.map((n,j)=>{const o=nK[j];const g=mk('g',{style:'cursor:default','data-k':j},s);const r=mk('rect',{x:X[1],y:o.y,width:W,height:Math.max(2,o.h),rx:2,fill:KG[j]},g);
-    // name and count sit just to the right of the bar; the halo keeps them readable where a ribbon passes behind
-    const lx=X[1]+W+(narrow?8:12),ay=narrow?o.y+o.h/2-((o.lines.length-1)*13)/2:o.y+o.h/2-2,by=narrow?ay+o.lines.length*13+1:o.y+o.h/2+15;
-    const a=txt(lx,ay,narrow?'':LBL[n],{'text-anchor':'start','font-size':narrow?11:13,class:'sk-kind','font-family':FF});
+  const kindEls=KIND.map((n,j)=>{const o=nK[j];const g=mk('g',{style:'cursor:default','data-k':j},s);
+    const tile=LANE||LANEN?mk('rect',{x:LANE?X[1]-LANE:X[1]+W,y:narrow?o.y+(o.h-o.slot)/2:o.y,width:LANE||LANEN,height:Math.max(2,narrow?o.slot:o.h),fill:KG[j],'fill-opacity':.32},g):null;const r=mk('rect',{x:X[1],y:o.y,width:W,height:Math.max(2,o.h),rx:2,fill:KG[j]},g);
+    // name and count sit in the kind's tile: left of the bar on wide screens, right of it on phones; no ribbon runs under them
+    const lx=narrow?X[1]+W+8:X[1]-10,ka=narrow?'start':'end',ay=narrow?o.y+o.h/2-((o.lines.length-1)*13)/2:o.y+o.h/2-2,by=narrow?ay+o.lines.length*13+1:o.y+o.h/2+15;
+    const a=txt(lx,ay,narrow?'':LBL[n],{'text-anchor':ka,'font-size':narrow?11:13,class:'sk-kind','font-family':FF});
     if(narrow)o.lines.forEach((line,i)=>{const ts=mk('tspan',{x:lx,dy:i?13:0},a);ts.textContent=line});
     a.parentNode===s&&g.appendChild(a);
-    const b=txt(lx,by,sum(SK1,1,n).toLocaleString(),{'text-anchor':'start','font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3'),class:'sk-kind'});b.parentNode===s&&g.appendChild(b);R.nodes[1].push({r,t:[a,b],n:[b]});return g});
+    const b=txt(lx,by,sum(SK1,1,n).toLocaleString(),{'text-anchor':ka,'font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3'),class:'sk-kind'});b.parentNode===s&&g.appendChild(b);R.nodes[1].push({r,t:tile?[tile,a,b]:[a,b],n:[b]});return g});
   FIT.forEach((n,f)=>{const o=nF[f],tot=sum(SK2,1,n),hi=f===2;const r=mk('rect',{x:X[2],y:o.y,width:W,height:o.h,rx:2,fill:FC[f]},s);const cy=o.y+o.h/2;
     const L=FL[f],fs=narrow?11:13,lh=narrow?16:17,big=narrow?16:28,x=X[2]+W+(narrow?6:14),y0=cy-(L.length-1)*lh/2-(narrow?12:8);
     const pc=txt(x,y0,Math.round(tot/24.13)+'%',{'font-size':big,'font-weight':600,'letter-spacing':'-.04em','font-family':FF});
@@ -5046,10 +5052,10 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   const focus=j=>flows.forEach(p=>p.setAttribute('fill-opacity',+p.dataset.k===j?Math.min(.95,+p.dataset.op+.3):.08));
   kindEls.forEach((g,j)=>{g.addEventListener('pointerenter',()=>focus(j));g.addEventListener('pointerleave',reset)});
   flows.forEach(p=>{p.addEventListener('pointerenter',()=>focus(+p.dataset.k));p.addEventListener('pointerleave',reset)});
-  s.dataset.x0=X[0];s.dataset.x1=X[1];s.dataset.x2=X[2];s.dataset.band=xOut;
+  s.dataset.x0=X[0];s.dataset.x1=X[1];s.dataset.lane=LANE;s.dataset.x2=X[2];s.dataset.band=xOut;
   SKR.set({s,X,W,TOP,H,R})}
 sankey();
-new ResizeObserver(()=>{const sv=$('#sankey'),cw=sv.parentNode.clientWidth-2*parseFloat(getComputedStyle(sv.parentNode).paddingLeft),n=SKN();if(String(n)!==sv.dataset.narrow||Math.abs((n?Math.max(300,cw):Math.max(MINW,cw))-sv.dataset.w)>4)sankey()}).observe($('#sankey').parentNode);
+new ResizeObserver(()=>{const sv=$('#sankey'),cw=sv.parentNode.clientWidth-2*parseFloat(getComputedStyle(sv.parentNode).paddingLeft),n=SKN();if(String(n)!==sv.dataset.narrow||Math.abs((n?Math.max(240,cw):Math.max(MINW,cw))-sv.dataset.w)>4)sankey()}).observe($('#sankey').parentNode);
 // redraw whenever the figure crosses the phone width, however the frame was resized
 
 
@@ -6057,6 +6063,13 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
     // the window's top never rises above the heading's bottom + gap while the heading shows (a scaled, grown or zoomed window is pushed down)
     const tyS=lerp(H*.12,0,e)+dyS,topNow=H/2+tyS-(wh+extra)*sc/2,tyF=ttl.style.opacity==='0'||!root.classList.contains('titled')?tyS:tyS+Math.max(0,TB-topNow);
     stage.style.transformOrigin='';stage.style.transform=`translate(-50%,-50%) translateY(${tyF.toFixed(1)}px) scale(${sc})`;
+    // Story join 1: zoomed out, the window sits on the very rect the MVP's window ended on (its top and width), so the carried
+    // copy hands over without moving; the hold keeps that rect, and the dive lets go of it as it zooms in
+    {const zr=jz>0&&(document.getElementById('cwA')||{})._zr;
+      if(zr){const P=pin.getBoundingClientRect(),o=win.getBoundingClientRect();if(o.width>0){
+        const c=1+(zr.w/o.width-1)*jz;stage.style.transform=`translate(-50%,-50%) translateY(${tyF.toFixed(1)}px) scale(${(sc*c).toFixed(5)})`;
+        const o2=win.getBoundingClientRect(),dx=(zr.l+zr.w/2-(o2.left+o2.width/2))*jz,dy2=(P.top+zr.t-o2.top)*jz;
+        stage.style.transform=`translate(${dx.toFixed(2)}px,${dy2.toFixed(2)}px) translate(-50%,-50%) translateY(${tyF.toFixed(1)}px) scale(${(sc*c).toFixed(5)})`}}}
     // the ending's side-by-side: the still is taken once, in the hold on the raw reply
     {const key=innerWidth+'x'+H;if(rawSnap&&rawKey!==key){rawSnap.remove();rawSnap=null}
      if(jn&&!rawSnap&&landed&&S>=1&&!k&&!end&&z>=.999&&u1>=1&&full>0){rawSnap=stage.cloneNode(true);rawSnap.removeAttribute('style');rawSnap.classList.add('ds-rawc');rawSnap.setAttribute('aria-hidden','true');
@@ -7068,7 +7081,7 @@ const cwKit=(()=>{
   let uid=0;
   // the Sankey's own column x's, from the width it was drawn at (index.html's sankey(): gutters by width, kinds centred)
   function skGeo(){const sv=document.getElementById('sankey');if(!sv||!sv.dataset.w)return null;const VW=+sv.dataset.w;
-    if(sv.dataset.x1)return{sv,VW,GL:+sv.dataset.x0,X1:+sv.dataset.x1,X2:+sv.dataset.x2,band:+sv.dataset.band};
+    if(sv.dataset.x1)return{sv,VW,GL:+sv.dataset.x0,X1:+sv.dataset.x1,X2:+sv.dataset.x2,band:+sv.dataset.band,lane:+sv.dataset.lane||0};
     const GL=VW<820?112:VW<1000?132:156,X2=VW-GL-10,X1=Math.round((GL+X2)/2)-36;return{sv,VW,GL,X1,X2,band:X1+10}}
   function skBands(){const G=skGeo();if(!G)return null;const out=[],x0=Math.round(G.band),x2=Math.round(G.X2);
     G.sv.querySelectorAll('path').forEach(p=>{const n=(p.getAttribute('d')||'').match(/-?\d+(?:\.\d+)?/g);if(!n||n.length<16)return;const v=n.map(Number);
@@ -7101,7 +7114,7 @@ const cwKit=(()=>{
     /* xCenter: middle column under the stage title; xEcho: last column on the echo bar for the handoff.
        World width comes from the svg (cwKit has no WW of its own — that lives on the stack IIFE). */
     const WW=+svg.getAttribute('width')||1120;
-    const xEcho=bx-G.X2,xCenter=WW/2-G.X1,g=mk('g',{class:'cw-skc',transform:`translate(${f(xCenter)} ${f(top-68)})`});svg.insertBefore(g,svg.firstChild);
+    const xEcho=bx-G.X2,xCenter=WW/2-(G.X1+(10-(G.lane||0))/2),g=mk('g',{class:'cw-skc',transform:`translate(${f(xCenter)} ${f(top-68)})`});svg.insertBefore(g,svg.firstChild);
     const A=mk('g',{},g),B=mk('g',{},g),bp=[];
     [...G.sv.children].forEach(n=>{if(n.tagName==='title'||n.tagName==='desc')return;const c=n.cloneNode(true);c.querySelectorAll('title').forEach(t=>t.remove());
       const x=parseFloat(c.getAttribute('x')),d=c.tagName==='path'?(c.getAttribute('d')||'').match(/-?\d+(?:\.\d+)?/):null;
@@ -7120,18 +7133,19 @@ const cwKit=(()=>{
     SC.done=()=>whole;SC.ff=()=>{if(whole||ff)return;ff=[performance.now(),t0?performance.now()-t0:0];if(!t0)t0=performance.now();req()};
     const setM=x=>{const v=x==null?'':`linear-gradient(90deg,#000 ${f(x)}px,transparent ${f(x+FE)}px)`;layers().forEach(e=>{e.style.webkitMaskImage=v;e.style.maskImage=v})};
     const plan=()=>{const tr=[],add=(t0,d,fn,end,ez=EZ)=>tr.push({t0:t0*D,d:Math.max(1,d*D),fn,end,ez,last:-1});
-      const bars=[[],[],[]],words=[[],[],[]],heads=[],bands=[[],[]],t1=(G.GL+G.X1)/2+30,t2=(G.X1+G.X2)/2;
+      const bars=[[],[],[]],words=[[],[],[]],heads=[[],[],[]],bands=[[],[]],t1=(G.GL+G.X1)/2+30,t2=(G.X1+G.X2)/2;
       const col=el=>{let b;try{b=el.getBBox()}catch(e){return 0}const cx=b.x+b.width/2;return cx<t1?0:cx<t2?1:2};
       const thick=p=>{const v=(p.getAttribute('d')||'').match(/-?\d+(?:\.\d+)?/g);return v&&v.length>15?Math.abs(+v[15]-+v[1]):0};
       // a column's words sit to the left of its bar, so a word's column is read from its right edge
       const wcol=el=>{let b;try{b=el.getBBox()}catch(e){return 0}const re=b.x+b.width;return re<G.GL+40?0:re<t2?1:2};
-      const word=el=>{const t=el.textContent.trim();if(el.tagName==='text'&&t&&t===t.toUpperCase()&&/[A-Z]/.test(t))heads.push(el);else words[wcol(el)].push(el)};
+      // a column title is the text on the top row, above every bar; it belongs to the column under its centre
+      const word=el=>{if(el.tagName==='text'&&+el.getAttribute('y')<30)heads[col(el)].push(el);else words[wcol(el)].push(el)};
       [[SC.A,0],[SC.B,1]].forEach(([grp,st])=>[...grp.children].forEach(el=>{const t=el.tagName;
         if(t==='path')bands[st].push(el);else if(t==='rect')bars[col(el)].push(el);
         // a kind's group holds its bar and its two lines: the bar grows with the bars, the lines rise with the words
         else if(t==='g'){const k=wcol(el);[...el.children].forEach(c=>c.tagName==='rect'?bars[col(c)].push(c):words[k].push(c))}
         else word(el)}));
-      E.rects.forEach(r=>bars[2].push(r));E.labels.forEach(l=>words[2].push(l));words[2].unshift(E.head);
+      E.rects.forEach(r=>bars[2].push(r));E.labels.forEach(l=>words[2].push(l));heads[2].push(E.head);
       bars.forEach(c=>c.sort((a,b)=>(+a.getAttribute('y'))-(+b.getAttribute('y'))));
       const bar=el=>p=>{el.style.transformBox='fill-box';el.style.transformOrigin='50% 50%';el.style.transform=`scaleY(${p.toFixed(3)})`},
         rise=el=>p=>{el.style.opacity=p.toFixed(3);el.style.transform=`translateY(${((1-p)*5).toFixed(2)}px)`},
@@ -7139,8 +7153,9 @@ const cwKit=(()=>{
         clr=el=>()=>{['transform','transformBox','transformOrigin','opacity','clipPath','webkitClipPath'].forEach(k=>el.style[k]='')};
       const B=(el,t,d=380)=>add(t,d,bar(el),clr(el)),R=(el,t)=>add(t,320,rise(el),clr(el)),S=(el,t,d=620)=>add(t,d,sweep(el),clr(el));
       const big=l=>[...l].sort((a,b)=>thick(b)-thick(a));
-      heads.forEach((h,i)=>R(h,i*70));
+      if(mode!=='column by column')heads.flat().forEach((h,i)=>R(h,i*70));
       if(mode==='column by column'){
+        heads.forEach((c,k)=>c.forEach(h=>R(h,[80,1000,1980][k])));
         bars[0].forEach((e,i)=>B(e,80+i*40));words[0].forEach((e,i)=>R(e,320+i*30));
         big(bands[0]).forEach((e,i)=>S(e,520+i*28));
         bars[1].forEach((e,i)=>B(e,1000+i*35));words[1].forEach((e,i)=>R(e,1240+i*20));

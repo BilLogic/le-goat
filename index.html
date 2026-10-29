@@ -373,11 +373,15 @@ code{font:12px/1 Menlo,monospace;color:var(--sk-code);background:var(--sk-react)
 .dtable table{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.35}
 .dtable th{text-align:left;font-weight:700;background:var(--sk-react);padding:7px 10px}
 .dtable td{padding:7px 10px;border-top:1px solid var(--sk-line);vertical-align:top}
-.pcard{grid-template-columns:28px minmax(0,1fr)!important;align-items:start}
-.pcard .lg{grid-row:1;align-self:start;background:#fff;border:1px solid var(--sk-line);display:grid;place-items:center;padding:2px}
-.pcard .uh{grid-column:2;min-width:0}.pcard .uh b{font-size:14px;line-height:1.3}
+/* the proposal card: a header (logo beside title + status), then the action with its one-line note under it, then the button.
+   On approval the note itself becomes the approval line. Spacing is set here: the page's .sub margin and line height leak in */
+.pcard{grid-template-columns:32px minmax(0,1fr)!important;align-items:center;gap:0 10px!important;line-height:1.4}
+.pcard .sub{margin:0}
+.pcard .lg{grid-row:1;width:32px;height:32px;align-self:center;background:#fff;border:1px solid var(--sk-line);display:grid;place-items:center;padding:3px}
+.pcard .uh{grid-column:2;min-width:0}.pcard .uh b{display:block;font-size:14px;line-height:1.3}.pcard .uh .sub{margin-top:1px;line-height:1.3}
 .pcard .tx,.pcard>.sub,.pcard>.ctx,.pcard>.acts{grid-column:1/-1}
-.pcard .acts{justify-content:flex-start}
+.pcard .tx{margin-top:10px}.pcard>.sub,.pcard>.ctx{margin-top:2px;font-size:12.5px;line-height:1.4}
+.pcard .acts{justify-content:flex-start;margin-top:10px}
 .c5-modes{position:absolute;top:14px;right:16px;z-index:8;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .c5-mode{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--bg) 85%,transparent)}
 .c5-mode button{font:500 12px/1 var(--sans);color:var(--ink-3);background:none;border:0;border-radius:999px;padding:7px 12px;cursor:pointer;transition:background .2s,color .2s}
@@ -1124,6 +1128,7 @@ code{font:12px/1 Menlo,monospace;color:var(--sk-code);background:var(--sk-react)
 .ds-mstep.fixed .ds-mcall.b{opacity:.45}.ds-mstep.fixed .ds-mcall.a{opacity:1;transform:none}
 .ds-mnote{padding:18px 4px 0}
 .ds-mnote h3{font-size:22px}
+@media (max-width:480px){.ds-mcall{display:none}}
 .ds-mnote .ds-legend{margin-top:14px}
 @media (max-width:900px){.ds{display:none}.ds-m{display:block}}
 @media (prefers-reduced-motion:reduce){.ds-wm,.ds-fly{display:none}.ds-legend li,.ds-legend i,.ds-rv,#dissectSec .ds-b .body,#dissectSec .ds-a .body,.ds-stage,.ds-win,.ds-scroll,.ds-note,.ds-take,.ds-part,.ds-b,.ds-a,.ds-ann,.ds-send,.ds-chk,.ds-live,.ds-mzoom .sk,.ds-mcall,.ds-dots i,.ds-wc,.ds-title,.ds-hl{transition:none!important}.ds-title{filter:none!important}.ds-wn .o{display:none}.ds-wn .i,.ds-wd.on{animation:none!important}.ds-in .caret,.ds-flash::before{animation:none}}
@@ -1493,7 +1498,7 @@ html.jn-ds #dsRoot .ds-pin{background:var(--bg)}
 :is(#brbSec,#brbFig,#btSec) .brb-head{margin:0}
 :is(#brbSec,#brbFig,#btSec) .brb-vh{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* the bento: rows of 5 + 7 and 6 + 6, Keeping score across the last row; without the proposal card, 7 + 5 and 6 + 6 with Keeping
+/* the bento: rows of 5 + 7 and 6 + 6, the triple-double across the last row; without the proposal card, 7 + 5 and 6 + 6 with the triple-double
    score last. Two columns on tablets, one on phones */
 #brbSec .brb-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:var(--brb-row);gap:var(--brb-gap);max-width:1120px;margin:0 auto}
 #brbSec .brb-grid[data-n="5"] .brb-tp{grid-column:1/span 5;grid-row:1}
@@ -2657,7 +2662,7 @@ html:not(.jn) .st-cwsub{display:none}
 
 /* WHAT THE NUMBERS SAID (pilot) · the opening's flat bento cards, three across (stacked under 900px) */
 #pnSec .ib-cr{max-width:1120px;margin:0 auto}
-/* RESULTS (#rsSec) · "Keeping score": the opening's flat bento tiles, three across (stacked under 900px), the notes full width
+/* RESULTS (#rsSec) · "A triple-double for the team": the opening's flat bento tiles, three across (stacked under 900px), the notes full width
    below. Each comparison carries its difference as a badge; the right answers are the ledger's matrix, one square per answer */
 #rsSec{--rs-ok:#14855c;--rs-un:#e7b76c;--rs-before:#c3c8ca;--rs-hl:#f2b866;--rs-hk:58%}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #rsSec{--rs-ok:#5fcf9f;--rs-un:#c9a265;--rs-before:#3a4245;--rs-hk:34%}}
@@ -3538,7 +3543,7 @@ main>#cfSec{padding-top:max(0px,calc(var(--sp-chap) - var(--bar) - var(--pin-gap
 <nav class="toc" aria-label="Chapters"><ol>
   <li><a href="#problem">I became the team’s search engine</a></li><li><a href="#prototype">Could an agent answer them?</a></li><li><a href="#dissectSec">Making it a bot with manners</a></li>
   <li><a href="#carouselSec">The MVP for everyday questions</a></li><li><a href="#pilot">A tryout with the team</a></li><li><a href="#iter2">From answering to asking</a></li><li><a href="#btSec">A few tweaks under the hood</a></li>
-  <li><a href="#rsSec">Keeping score</a></li><li><a href="#reflection">Setting the GOAT free</a></li>
+  <li><a href="#rsSec">A triple-double for the team</a></li><li><a href="#reflection">Setting the GOAT free</a></li>
 </ol></nav>
 
 <!-- HERO · centered title over a deck of real conversations -->
@@ -3853,6 +3858,7 @@ main>#cfSec{padding-top:max(0px,calc(var(--sp-chap) - var(--bar) - var(--pin-gap
   .mnr .case{grid-template-columns:minmax(0,1fr);gap:10px}
   .mnr .case:not(.on){display:none}
 }
+@media (max-width:480px){.mnr .call{display:none}}
 
 :host{display:block}
 /* r17: the callout is a plain tinted box under its window, 16px clear (8px column gap + 8), the window's full width; no edge bar, no dashed outline */
@@ -4282,14 +4288,14 @@ let rz=0;addEventListener('resize',()=>{cancelAnimationFrame(rz);rz=requestAnima
 </section>
 
 
-<!-- RESULTS (score) · "Keeping score": the outcomes first, as one bento in the opening's tile style. Three data-viz tiles
+<!-- RESULTS (score) · "A triple-double for the team": the outcomes first, as one bento in the opening's tile style. Three data-viz tiles
      (asks reaching me, time to an answer, confident and right), each one big number, one label and one small chart; the
      source line; then one wide tile of notes from the team, which land as a pile of Slack replies (the quick-question wall's
      pile) as the tile scrolls in, the appreciative words marked. Phones: the tiles stack and the notes tile is shorter, fading
      out at its foot. Reduced motion: everything at rest. -->
 <section id="rsSec" class="ib rs" data-proto="score" data-layout="bento" data-cards="flat" aria-labelledby="rsTitle">
   <p class="sec-k rs-k">Impact</p>
-  <h2 id="rsTitle" class="rs-h"><span class="rs-hw">Keeping score: a triple-double for the team<span class="rs-info"><button type="button" class="rs-ib" aria-label="About these numbers" aria-describedby="rsSrc" aria-expanded="false"><svg viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></button><span id="rsSrc" class="rs-tip" role="tooltip">Before · Jan 2024 – Sep 14, 2026<br>After · Sep 15 – Oct 14, 2026</span></span></span></h2>
+  <h2 id="rsTitle" class="rs-h"><span class="rs-hw">A triple-double for the team<span class="rs-info"><button type="button" class="rs-ib" aria-label="About these numbers" aria-describedby="rsSrc" aria-expanded="false"><svg viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></button><span id="rsSrc" class="rs-tip" role="tooltip">Before · Jan 2024 – Sep 14, 2026<br>After · Sep 15 – Oct 14, 2026</span></span></span></h2>
   <div class="ib-cr"><div class="ib-view"><div class="ib-stage">
     <figure class="ib-slide rs-t" style="--i:0" role="group" aria-label="Asks reaching me: 1.8 a workday, down 71% from 6.3">
       <div class="ib-card">
@@ -4626,13 +4632,13 @@ const CONV=[
   [rx(['🐐',3]),[['SLACK','reaction_added :goat: ×3 → thanks counted · no model run']],3900]]},
  {bar:'<b># plus-product</b><span>6 members</span>',items:[
   [msg('pm','11:21 AM',`<div class="body">${mention('@le goat we landed on stepped progress for the tutor dashboard, not a percentage. can you turn this thread into a Roadmap card?')}</div>`),[['SLACK','app_mention · signature ✓ · 200 in 40ms'],['ROUTER','routeRequest() → {tier: "default"}']],0],
-  [msg('bot','11:21 AM',`${think(2000)}<div ${S(2200)}><div class="card pcard"><span class="lg">${NLOGO}</span><div class="uh"><b>Stepped progress on the tutor dashboard</b><div class="sub">Design Status: Backlog</div></div><div class="tx">Ready to <b>create a Roadmap card</b></div><div class="sub">Body 1,240 characters · review before approving</div><div class="acts" data-hide="4400"><button class="sb" type="button">Review</button></div><div class="ctx" ${S(4400)}>Approved by Bill G. · card created</div></div></div>`),
+  [msg('bot','11:21 AM',`${think(2000)}<div ${S(2200)}><div class="card pcard"><span class="lg">${NLOGO}</span><div class="uh"><b>Stepped progress on the tutor dashboard</b><div class="sub">Design Status: Backlog</div></div><div class="tx">Ready to <b>create a Roadmap card</b></div><div class="sub" data-hide="4400">Body 1,240 characters · review before approving</div><div class="ctx" ${S(4400)}>Approved by Bill G. · card created</div><div class="acts" data-hide="4400"><button class="sb" type="button">Review</button></div></div></div>`),
    [['TOOLS','slack_thread_read(…4410) → 14 messages'],['TOOLS','roadmap_query("stepped progress") → 0 duplicates'],['CHECKS','preflight ✓ · staged, nothing written'],['GATE','Review → approved by Bill'],['TOOLS','notion_create(Roadmap) 200 · card live']],800],
   [rx(['❤️',1]),[['SLACK','reaction_added :heart: by the PM → thanks counted · no model run']],5400]]},
  {bar:'<b># plus</b><span>9 members</span>',items:[
   [msg('dl','4:12 PM',`<div class="body">${mention('@le goat we just settled on new tutors shadowing two sessions before their first, not one. does the Onboarding spec still say one?')}</div>`),[['SLACK','app_mention · signature ✓ · 200 in 39ms'],['ROUTER','routeRequest() → {tier: "default"}']],0],
   [msg('bot','4:12 PM',`${think(2000)}<div ${S(2200)}><div class="body"><b>It still says one.</b> Here’s the fix, for review:</div>
-    <div class="card pcard"><span class="lg">${NLOGO}</span><div class="uh"><b>Onboarding spec</b><div class="sub">“shadow one session” → “shadow two sessions”</div></div><div class="tx">Ready to <b>update a Notion page</b></div><div class="sub">1 line to update · review before approving</div><div class="acts" data-hide="4200"><button class="sb" type="button">Review</button></div><div class="ctx" ${S(4200)}>Approved by the design lead · page updated</div></div></div>`),
+    <div class="card pcard"><span class="lg">${NLOGO}</span><div class="uh"><b>Onboarding spec</b><div class="sub">“shadow one session” → “shadow two sessions”</div></div><div class="tx">Ready to <b>update a Notion page</b></div><div class="sub" data-hide="4200">1 line to update · review before approving</div><div class="ctx" ${S(4200)}>Approved by the design lead · page updated</div><div class="acts" data-hide="4200"><button class="sb" type="button">Review</button></div></div></div>`),
    [['TOOLS','notion_search("Onboarding spec") 200 · 410ms'],['MODEL','page vs decision → 1 drift'],['GATE','Review → approved → notion_update 200']],800],
   [rx(['🙏',1]),[['SLACK','reaction_added :pray: by the design lead → thanks counted · no model run']],5200]]}];
 
@@ -4986,9 +4992,10 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   const cw=s.parentNode.clientWidth-parseFloat(getComputedStyle(s.parentNode).paddingLeft)*2;
   const VW=narrow?Math.max(300,Math.round(cw)):Math.max(MINW,Math.round(cw));
   let labelW=0,outW=0;
-  if(narrow){labelW=Math.round(Math.min(124,Math.max(96,VW*.4)));outW=Math.round(Math.min(108,Math.max(88,VW*.32)));while(labelW+outW+52>VW){labelW-=2;outW-=2}}
+  if(narrow){outW=Math.round(Math.min(112,Math.max(92,VW*.3)));labelW=Math.round(Math.min(150,Math.max(108,VW*.46)))}
   const GL=VW<820?112:VW<1000?132:156,GR=GL;
-  let TOP=narrow?92:34,H=narrow?540:630,VH=narrow?TOP+H+24:690,W=10,X=narrow?[0,6+labelW,VW-6-outW-W]:[GL,0,VW-GR-W];if(!narrow)X[1]=Math.round((X[0]+X[2])/2)-36;
+  let TOP=narrow?92:34,H=narrow?540:630,VH=narrow?TOP+H+24:690,W=10,X=narrow?[0,6,VW-6-outW-W]:[GL,0,VW-GR-W];if(!narrow)X[1]=Math.round((X[0]+X[2])/2)-36;
+  const nameW=narrow?Math.max(88,Math.min(labelW,Math.round((X[2]-(X[1]+W)-16)*.62))):0;
   s.setAttribute('viewBox',`0 0 ${VW} ${VH}`);s.style.width=VW+'px';s.dataset.w=VW;
   const FL=narrow?[["Didn't",'need me'],['Needed only','my sign-off'],['Needed me']]:[["Didn't need me"],['Needed only','my sign-off'],['Needed me']];// framed by what needed me: le goat isn't introduced yet
   // plainer names for the corpus categories; the data keeps its own keys
@@ -5000,7 +5007,7 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   const nS=col(SRC,n=>sum(SK1,0,n),30),nK=col(KIND,n=>sum(SK1,1,n),16),nF=col(FIT,n=>sum(SK2,1,n),30);const out={},inn={};
   // phones: each kind keeps a slot tall enough for its wrapped name, and the outcomes share that same span
   if(narrow){const fs=11,lh=13,wrap=(t,maxW)=>{const max=Math.max(8,Math.floor(maxW/(fs*.54))),words=t.split(' '),lines=[];let cur='';words.forEach(w=>{const n=cur?cur+' '+w:w;if(cur&&n.length>max){lines.push(cur);cur=w}else cur=n});if(cur)lines.push(cur);return lines};
-    let y=TOP;nK.forEach((o,j)=>{const lines=wrap(LBL[KIND[j]],labelW-12),need=Math.max(o.h,lines.length*lh+6);o.lines=lines;o.y=y+(need-o.h)/2;o.slot=need;y+=need+8});
+    let y=TOP;nK.forEach((o,j)=>{const lines=wrap(LBL[KIND[j]],nameW),need=Math.max(o.h,lines.length*lh+6);o.lines=lines;o.y=y+(need-o.h)/2;o.slot=need;y+=need+8});
     const span=y-8-TOP,totalF=nF.reduce((t,o)=>t+o.h,0)+18*(nF.length-1);let yy=TOP+Math.max(0,(span-totalF)/2);nF.forEach(o=>{o.y=yy;yy+=o.h+18});H=span;VH=TOP+H+16;s.setAttribute('viewBox',`0 0 ${VW} ${VH}`)}
   const flows=[];const R={heads:[],nodes:[[],[],[]],bands:[]};// what the entry reveal moves (SKR)
   const band=(x0,y0,x1,y1,h,fill,op,meta)=>{const m=(x0+x1)/2;const p=mk('path',{d:`M${x0} ${y0} C${m} ${y0},${m} ${y1},${x1} ${y1} L${x1} ${y1+h} C${m} ${y1+h},${m} ${y0+h},${x0} ${y0+h}Z`,fill,'fill-opacity':op},s);Object.assign(p.dataset,meta);p.dataset.op=op;flows.push(p);R.bands.push({p,g:{x0,y0,x1,y1,h},c:'s' in meta?0:1,i:'s' in meta?meta.s:meta.k});return p};
@@ -5020,16 +5027,16 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
     SRC.forEach((n,i)=>{const c=sum(SK1,0,n),w=c/2413*bw,a=i===2?'end':'start',lx=i===2?x+w:x;mk('rect',{x,y:24,width:Math.max(2,w),height:10,rx:2,fill:SG[i]},s);
       txt(lx,50,n,{'font-size':10,'text-anchor':a,'font-family':FF});
       txt(lx,64,c.toLocaleString(),{'font-size':11,'font-family':FM,fill:v('--ink-3'),'text-anchor':a});x+=w+gp});
-    R.heads=[null,hd(X[1]-6,TOP-14,'Kind of ask','end'),hd(X[2]+W+6,TOP-14,'What it needed','start')]}
+    R.heads=[null,hd(X[1]+W+8,TOP-14,'Kind of ask','start'),hd(X[2]+W+6,TOP-14,'What it needed','start')]}
   else{R.heads=[head(X[0]+W/2,'Where it arrived','middle'),head(X[1]+W/2,'Kind of ask','middle'),head(X[2]+W/2,'What it needed','middle')]}
   if(!narrow)SRC.forEach((n,i)=>{const o=nS[i];const r=mk('rect',{x:X[0],y:o.y,width:W,height:o.h,rx:2,fill:SG[i]},s);const a=txt(X[0]-12,o.y+o.h/2-2,n,{'text-anchor':'end'});const b=txt(X[0]-12,o.y+o.h/2+15,sum(SK1,0,n).toLocaleString(),{'text-anchor':'end','font-size':12,'font-family':'Geist Mono',fill:v('--ink-3')});R.nodes[0].push({r,t:[a,b],n:[b]})});
   const kindEls=KIND.map((n,j)=>{const o=nK[j];const g=mk('g',{style:'cursor:default','data-k':j},s);const r=mk('rect',{x:X[1],y:o.y,width:W,height:Math.max(2,o.h),rx:2,fill:KG[j]},g);
     // name and count sit just to the right of the bar; the halo keeps them readable where a ribbon passes behind
-    const lx=narrow?X[1]-6:X[1]+W+12,ay=narrow?o.y+o.h/2-((o.lines.length-1)*13)/2:o.y+o.h/2-2,by=narrow?ay+o.lines.length*13+1:o.y+o.h/2+15;
-    const a=txt(lx,ay,narrow?'':LBL[n],{'text-anchor':narrow?'end':'start','font-size':narrow?11:13,class:narrow?'':'sk-kind','font-family':FF});
+    const lx=X[1]+W+(narrow?8:12),ay=narrow?o.y+o.h/2-((o.lines.length-1)*13)/2:o.y+o.h/2-2,by=narrow?ay+o.lines.length*13+1:o.y+o.h/2+15;
+    const a=txt(lx,ay,narrow?'':LBL[n],{'text-anchor':'start','font-size':narrow?11:13,class:'sk-kind','font-family':FF});
     if(narrow)o.lines.forEach((line,i)=>{const ts=mk('tspan',{x:lx,dy:i?13:0},a);ts.textContent=line});
     a.parentNode===s&&g.appendChild(a);
-    const b=txt(lx,by,sum(SK1,1,n).toLocaleString(),{'text-anchor':narrow?'end':'start','font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3'),class:narrow?'':'sk-kind'});b.parentNode===s&&g.appendChild(b);R.nodes[1].push({r,t:[a,b],n:[b]});return g});
+    const b=txt(lx,by,sum(SK1,1,n).toLocaleString(),{'text-anchor':'start','font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3'),class:'sk-kind'});b.parentNode===s&&g.appendChild(b);R.nodes[1].push({r,t:[a,b],n:[b]});return g});
   FIT.forEach((n,f)=>{const o=nF[f],tot=sum(SK2,1,n),hi=f===2;const r=mk('rect',{x:X[2],y:o.y,width:W,height:o.h,rx:2,fill:FC[f]},s);const cy=o.y+o.h/2;
     const L=FL[f],fs=narrow?11:13,lh=narrow?16:17,big=narrow?16:28,x=X[2]+W+(narrow?6:14),y0=cy-(L.length-1)*lh/2-(narrow?12:8);
     const pc=txt(x,y0,Math.round(tot/24.13)+'%',{'font-size':big,'font-weight':600,'letter-spacing':'-.04em','font-family':FF});
@@ -5117,12 +5124,12 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
    {k:'Knows who to ask',p:'“Who should I reach out to?”',bar:'<b># plus-design</b><span>22 members</span>',
     items:[[msg('res','1:31 PM',`<div class="body">${mention('@le goat how do I get access to the session recordings?')}</div>`),0],
       [msg('bot','1:31 PM',`${think(1800,`${step(null,'Reading the question')}${step('map','Searching the blueprint',['“session recordings access”','4 matches'])}`)}<div ${S(2000)}><div class="body"><p><b>Ask Danielle.</b> Danielle manages access to the session recordings. Here’s a request you can paste:</p></div><div class="card paste"><div class="tx">Hi Danielle, could I get view access to the session recordings? I’m on the tutor schedule redesign. Thanks!</div></div>${srcs(2)}${FOOT}${THUMBS}</div>`),800]]},
-   {k:'Guides the practice',p:'“When to use which button style?”',bar:'<b># plus-design</b><span>22 members</span>',
-    items:[[msg('eng','3:12 PM',`<div class="body">${mention('@le goat should this secondary button be tonal or outline?')}</div>`),0],
+   {k:'Guides the practice',p:'“When should I use a filled button or an outline button?”',bar:'<b># plus-design</b><span>22 members</span>',
+    items:[[msg('eng','3:12 PM',`<div class="body">${mention('@le goat when should I use a filled button vs an outline button?')}</div>`),0],
       [msg('bot','3:12 PM',`${think(2100,`${step(null,'Reading the question and this thread')}${step('book','Checking Button usage in the design system',['Button · fill'])}`)}<div ${S(2300)}><div class="body"><p><b>Use outline.</b> Next to a filled primary, the secondary button should be <code class="sk-code">outline</code> so the primary stays the clear action. Use <code class="sk-code">tonal</code> for quieter emphasis when nothing filled sits beside it.</p><table class="sk-tbl"><thead><tr><th>Fill</th><th>When</th></tr></thead><tbody><tr><td>filled</td><td>Primary action</td></tr><tr><td>outline</td><td>Secondary next to filled</td></tr><tr><td>tonal</td><td>Soft emphasis, alone</td></tr><tr><td>ghost</td><td>Tertiary / low emphasis</td></tr></tbody></table></div>${srcs(3)}${FOOT}${THUMBS}</div>`),800]]},
    {k:'Drafts the card',p:'“Can you turn this into a card?”',bar:'<b># plus-product</b><span>7 members</span>',
     items:[[msg('pm','11:48 AM',`<div class="body">${mention('@le goat can you turn this into a card? the schedule page needs an empty state before launch')}</div>`),0],
-      [msg('bot','11:48 AM',`${think(2200,`${step(null,'Reading the thread')}${step('book','Drafting the Roadmap card',['Design Status: Backlog'])}`)}<div ${S(2400)}><div class="card pcard"><span class="lg">${NLOGO}</span><div class="uh"><b>Empty state for the tutor schedule page</b><div class="sub">Design Status: Backlog</div></div><div class="tx">Ready to <b>create a Roadmap card</b></div><div class="sub">Review before approving</div><div class="acts" data-hide="5200"><button class="sb" type="button">Review</button></div><div class="ctx" ${S(5200)}>Approved by <span class="mention">@design lead</span> · card created</div></div>${FOOT}${THUMBS}</div>`),800]]}];
+      [msg('bot','11:48 AM',`${think(2200,`${step(null,'Reading the thread')}${step('book','Drafting the Roadmap card',['Design Status: Backlog'])}`)}<div ${S(2400)}><div class="card pcard"><span class="lg">${NLOGO}</span><div class="uh"><b>Empty state for the tutor schedule page</b><div class="sub">Design Status: Backlog</div></div><div class="tx">Ready to <b>create a Roadmap card</b></div><div class="sub" data-hide="5200">Review before approving</div><div class="ctx" ${S(5200)}>Approved by <span class="mention">@design lead</span> · card created</div><div class="acts" data-hide="5200"><button class="sb" type="button">Review</button></div></div>${FOOT}${THUMBS}</div>`),800]]}];
   const N=D.length,READ=230,ns=document.getElementById('carouselSec');// READ: ms per word of the answer (about 260 wpm)
   let HOLD=2500;
   const COMP=w=>`<div class="sk-comp" aria-hidden="true"><div class="sk-in"><span class="sk-ph">Message ${w}</span><span class="sk-dr">thank you!</span></div><div class="sk-tb"><span class="sk-ic">+</span><span class="sk-ic">Aa</span><span class="sk-ic">☺</span><span class="sk-ic">@</span><span class="sk-sep"></span><span class="sk-send"><span class="sk-sb"><svg viewBox="0 0 20 20"><path d="M2.6 2.2c-.5-.2-1 .3-.8.8l2.2 6.3c.1.3.1.5 0 .8l-2.2 6.3c-.2.5.3 1 .8.8l15-7c.5-.2.5-.9 0-1.1z"/></svg></span><span class="sk-sc"><svg viewBox="0 0 10 20"><path d="M2.2 8.6 5 11.4l2.8-2.8"/></svg></span></span></div></div>`;
@@ -5597,7 +5604,9 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
      sat, so the frame the reader leaves and the frame they land on are the same pixels, and it never fades while it moves.
      The ask, asker and channel come from the MVP's test chat (data only; the raw reply keeps its nine parts). */
   // Story opens on the zoomed-out window (the whole reply at screen height): the copy carries the MVP's window there over ZO, then hands over
-  const J1={SKIP:188,ZO:72,XF:4,XT:12,TO:[212,222],TI:[222,232]};J1.ECHO=J1.ZO+J1.XF;// XT: where the pull-back starts; TO/TI: the cwA title block out, the manners title in (vh)
+  // the MVP's window already lands on this pin's zoomed-out rect, so the carry is short. Then, with the window still, the cwA
+  // title block leaves (TO) and this chapter's comes in (TI), one after the other; only then the dive to reading size (DV)
+  const J1={SKIP:188,ZO:28,XF:4,XT:4,TO:[194,204],TI:[206,216],DV:[218,266]};J1.ECHO=J1.ZO+J1.XF;// XT: where the carry starts; TO/TI: the cwA title block out, the manners title in (vh)
   const jnDs=()=>document.documentElement.classList.contains('jn-ds');
   // the zoomed-out frame in Story mode: the screen's height under the lab's sticky top bar (nav and tag), 16px margins
   const jnTop=()=>16;// no top chrome: 16px of air above a join's stage
@@ -5636,7 +5645,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
       const cf=c.querySelector('.cw-feed'),cr=c.querySelector('.cw-scroll'),sf=src.querySelector('.cw-feed'),sr=sf&&sf.querySelector('.cw-scroll');
       // and where the MVP's feed was scrolled to, so the first frame matches it to the pixel
       const o0=sr?(sf.getBoundingClientRect().top-sr.getBoundingClientRect().top)/(src.getBoundingClientRect().width/src.offsetWidth||1):0;
-      const sr0=src.getBoundingClientRect();cwc._={a0:cwRest||{l:sr0.left,t:sr0.top,w:sr0.width,h:sr0.height},w:src.offsetWidth,h:src.offsetHeight,fh:cf?cf.offsetHeight:0,sh:cr?cr.offsetHeight:0,o0,sk:c,feed:cf,scr:cr,src};
+      const sr0=src.getBoundingClientRect(),zr=(document.getElementById('cwA')||{})._zr;cwc._={a0:zr||cwRest||{l:sr0.left,t:sr0.top,w:sr0.width,h:sr0.height},w:src.offsetWidth,h:src.offsetHeight,fh:cf?cf.offsetHeight:0,sh:cr?cr.offsetHeight:0,o0,sk:c,feed:cf,scr:cr,src};
       // the copy is the window now: the MVP's own, scrolling away with its section, would show as a second one
       src.style.visibility='hidden';requestAnimationFrame(frame)}
     // the copy stays in step with the MVP's window: if the join began before the MVP drew its last frame (a quick scroll,
@@ -5677,7 +5686,13 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
   const askMsg=scroll.querySelector('.msg'),askAv=askMsg.querySelector('.av'),askWho=askMsg.querySelector('.who').firstChild,askBody=askMsg.querySelector('.body'),barB=bar.querySelector('b'),barS=bar.querySelector('span');
   const ORIG={av:[askAv.style.background,askAv.textContent],who:askWho.nodeValue,b:barB.textContent,s:barS.textContent,ph:ph.textContent};
   let j1Was=false;
+  /**
+   * Story: give this window the MVP window's channel intro, ask and follow-up, so the carried window never changes its lines.
+   * @param {boolean} on
+   * @returns {boolean} false while the MVP's window is not built yet (try again next frame)
+   */
   function swapAsk(on){const cw=document.querySelector('section[data-proto="cw"]'),t=q=>{const e=cw&&cw.querySelector(q);return e?e.textContent.trim():''};
+    if(on&&!(cw&&cw.querySelector('.cw-sk [data-k="ask"] .cw-body')))return false;
     if(on){const ask=t('[data-k="ask"] .cw-body')||'@le goat where does the date picker live?',name=(t('[data-k="ask"] .cw-who').match(/^[^\d]*/)||[''])[0].trim()||'Bill G.',
         k=Object.keys(PEOPLE).find(k=>PEOPLE[k][0]===name)||'bill';
       askBody.innerHTML=mention(ask);askAv.style.background=PEOPLE[k][2];askAv.textContent=PEOPLE[k][1];askWho.nodeValue=PEOPLE[k][0];
@@ -5686,7 +5701,8 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
       if(!scroll.querySelector('.ds-intro')){const ib=cw&&cw.querySelector('.cw-intro');if(ib){const d=document.createElement('div');d.className='ds-intro';d.innerHTML=ib.innerHTML;scroll.prepend(d)}
         const fu=cw&&cw.querySelector('[data-k="fu"]');if(fu){const w=document.createElement('div');w.className='ds-fu';const ft=(t('[data-k="fu"] .cw-who').match(/Today.*$|\d.*$/)||['2:16 PM'])[0];
           w.innerHTML=msg(k,ft,`<div class="body">${t('[data-k="fu"] .cw-body')}</div>${RX}`);late.before(w)}}}
-    else{scroll.querySelectorAll('.ds-intro,.ds-fu').forEach(e=>e.remove());askBody.innerHTML=mention(Q);askAv.style.background=ORIG.av[0];askAv.textContent=ORIG.av[1];askWho.nodeValue=ORIG.who;barB.textContent=ORIG.b;barS.textContent=ORIG.s;ph.textContent=ORIG.ph}}
+    else{scroll.querySelectorAll('.ds-intro,.ds-fu').forEach(e=>e.remove());askBody.innerHTML=mention(Q);askAv.style.background=ORIG.av[0];askAv.textContent=ORIG.av[1];askWho.nodeValue=ORIG.who;barB.textContent=ORIG.b;barS.textContent=ORIG.s;ph.textContent=ORIG.ph}
+    return true}
   const notes=[...notesBox.children],late=scroll.querySelector('.ds-late'),botBody=late.querySelector('.msg').lastElementChild;
   root._ds={STEPS,SLOW,notes,DC,J1,HOLD,MV,get NS(){return NS},skip};/* test hook */
   // the raw reply is named for what it is while the reader first meets it: the model's output, before any shaping
@@ -5929,7 +5945,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
     // (opacity, not visibility: parts inside set their own visibility, and a child's visible would show through a hidden pin)
     {const off=jnDs()&&r.top>.5;pin.style.opacity=off?'0':'';pin.style.pointerEvents=off?'none':''}
     // Story join 1: the pin opens on the raw reply (v ≥ SKIP); u1 runs the MVP's window's zoom-out (uz) and hand-over (ux)
-    const jn=jnDs(),u1=jn?sg(v0,0,J1.ECHO):1,uz=jn?sg(v0,J1.XT,J1.ZO):1,ux=jn?sg(v0,J1.ZO,J1.ECHO):1,v=jn?Math.max(J1.SKIP,v0+J1.SKIP-J1.ECHO):v0,to=jn?sg(v,J1.TO[0],J1.TO[1]):1,ti=jn?sg(v,J1.TI[0],J1.TI[1]):1;if(jn!==j1Was){j1Was=jn;swapAsk(jn);layNotes()}
+    const jn=jnDs(),u1=jn?sg(v0,0,J1.ECHO):1,uz=jn?sg(v0,J1.XT,J1.ZO):1,ux=jn?sg(v0,J1.ZO,J1.ECHO):1,v=jn?Math.max(J1.SKIP,v0+J1.SKIP-J1.ECHO):v0,to=jn?sg(v,J1.TO[0],J1.TO[1]):1,ti=jn?sg(v,J1.TI[0],J1.TI[1]):1;if(jn!==j1Was&&swapAsk(jn)){j1Was=jn;layNotes()}
     // typing is tied to the scroll; reaching the end of the question presses send
     const nc=Math.round(sg(v,4,36)*Q.length),nowSent=v>42;
     ty.textContent=nowSent?'':Q.slice(0,nc);ph.style.display=nc&&!nowSent?'none':'';inp.classList.toggle('typing',!nowSent&&nc>0&&nc<Q.length);send.classList.toggle('ready',!nowSent&&nc>=Q.length);
@@ -5949,7 +5965,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
       late.style.opacity=1;late.style.height='';late.style.overflow='';clock(dial,WAITS);ct.textContent=fmt(WAITS)}
     STR.set(Math.floor(sN));const S=sN/STR.total;root.classList.toggle('stream',landed&&S>0&&S<1);
     // then zoom out to the whole of it; the way back in is one dive: scale and offset share one progress, landing on the top of the reply
-    const ss=t=>t*t*(3-2*t),zo=jn?ss(sg(v,150,188)):1,di=ss(sg(v,212,266));z=zo*(1-di);// outside Story the reply is already zoomed out from the section before; this section only zooms in
+    const ss=t=>t*t*(3-2*t),zo=jn?ss(sg(v,150,188)):1,di=ss(jn?sg(v,...J1.DV):sg(v,212,266));z=zo*(1-di);// outside Story the reply is already zoomed out from the section before; this section only zooms in
     // each step's progress: 0 as its marker enters at 85% of the screen, 1 as it reaches 20%
     const Pn=notes.map((n,i)=>clamp((.85-(n.getBoundingClientRect().top+lg)/H)/((STEPS[i].len||.65)*SLOW),0,1)),M={},C={};STEPS.forEach((s,i)=>{M[i+1]=eio(sg(Pn[i],...(s.mo||TL.morph)));// in-out: a scrubbed morph spends its stretch evenly, no lurch at either end
       C[i+1]=sg(Pn[i],...(s.dm||TL.dim))});
@@ -6007,7 +6023,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
     // the title at the top (--pin-gap of air), the window 40 under it and centered in the height that is left
     const BAR=0,PG=clamp(H*.07,40,88),GAPH=40,ttlH=ttl.offsetHeight,extra=stage.offsetHeight-win.offsetHeight;
     const free=H-BAR-PG*2.25-ttlH-GAPH-extra,room=Math.max(240,free),maxH=Math.min(820,room),t0=BAR+PG;
-    ttl.style.top=t0+'px';TB=t0+ttlH+GAPH;const dy=(TB+H-PG*1.25)/2-H/2;
+    ttl.style.top=t0+'px';TB=t0+ttlH+GAPH;root._tb=TB;const dy=(TB+H-PG*1.25)/2-H/2;
     // the window: closed box → channel → following the stream → zoomed out → centered on the step in play → the whole reply
     const e=clamp(x,0,1),ch=comp.offsetHeight+14,bf=clamp(e*1.6,0,1),bh=BH*bf,fh=maxH-BH-ch-2,total=scroll.offsetHeight,bottom=total-fh,full=BH+total+ch+2;
     let k=0;for(let i=NS;i>=1;i--)if(Pn[i-1]>0){k=i;break}
@@ -6022,7 +6038,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
     const stop=j=>{const a=anchor(j);let t=1e9,sum=0;parts.forEach(q=>{if(q.k>=j&&botBody.contains(q.el)){t=Math.min(t,q.el.offsetTop);sum+=q.hb}});return Math.max(0,t<1e9?Math.min(a??0,t+sum+tail-fh):a??0)};
     const held=j=>{let m=0;for(let i=1;i<=j;i++)m=Math.max(m,stop(i));return m};
     // Story join 1: zoomed out, the window spans the screen's height (under the nav), and the dive brings it back to this frame
-    const jz=jn&&landed&&!k&&!end?z:0,jT=jz?Math.max(TB,jTx):0,dyS=jz?lerp(dy,(jT+H-16)/2-H/2,jz):dy;
+    const jz=jn&&landed&&!k&&!end?z:0,jT=jz?Math.max(TB,jTx,(document.getElementById('cwA')||{})._zt||0):0,dyS=jz?lerp(dy,(jT+H-16)/2-H/2,jz):dy;
     let wh,sc=1,off;
     if(end){wh=full;sc=Math.min(1,(Math.min(room,H-TB-PG*1.25-extra)-16)/wh);off=0}
     else if(k){wh=maxH;const c0=held(Math.max(1,prevK(k))),ck=held(k),gl=clamp(Math.abs(ck-c0)/1200,.12,.4),g0=prevK(k)>0?DC.cDraw/2:0;// the last step's connector retracts first (g0), then the window glides; this step's connector draws once it has settled (GLE)
@@ -6060,7 +6076,8 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
      else if(rawSnap){rawSnap.style.visibility='hidden';rawSnap.style.opacity='0';if(sbB)sbB.style.opacity=sbA.style.opacity='0'}}
     // Story join 1: the MVP's window, carried over whole, zooms out to the screen-high window and hands over to it
     if(jn&&r.top<=.5&&u1<1)cwClone(uz,ux,false,to);else cwClone(-1,0,jn&&r.top<=.5&&u1>=1);
-    if(cwt){if(!(jn&&r.top<=.5)||to>=1){cwt.remove();cwt=null;jTx=0}else cwt.style.opacity=(1-to).toFixed(3)}else if(!(jn&&r.top<=.5)||to>=1)jTx=0;
+    // the zoomed-out window keeps the top it opened on until the dive: dropping jTx with the old title block would grow it
+    const inJ=jn&&r.top<=.5;if(cwt){if(!inJ||to>=1){cwt.remove();cwt=null;if(!inJ)jTx=0}else cwt.style.opacity=(1-to).toFixed(3)}else if(!inJ)jTx=0;
     // the meter: a quiet count of what le goat is asking you to read
     meter.style.opacity=k&&!end?1:0;
     // the manners, beside the window from the title on: a step lights the manner(s) it embodies once its After arrives (the
@@ -6107,7 +6124,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
   SM.sub(frame);
   SM.seg(()=>{if(!root.offsetParent)return null;const r=root.getBoundingClientRect(),y0=r.top+scrollY;return[[y0,y0+root.offsetHeight-innerHeight,1]]});
   SM.seg(()=>{if(!root.offsetParent)return null;const H=innerHeight,r=root.getBoundingClientRect(),y0=r.top+scrollY,jn=jnDs(),o=[],add=(a,b)=>o.push([y0+a/100*H,y0+b/100*H]);
-    if(jn){add(J1.XT,J1.ZO);const d=J1.ECHO-J1.SKIP;add(212+d,266+d)}else add(212,266);
+    if(jn){add(J1.XT,J1.ZO);const d=J1.ECHO-J1.SKIP;add(J1.DV[0]+d,J1.DV[1]+d)}else add(212,266);
     notes.forEach((n,i)=>{if(skip(i+1))return;const M=(n.getBoundingClientRect().top-r.top)/H*100;add(M-85,M-85+MV(i))});
     const M=(notes[NS-1].getBoundingClientRect().top-r.top)/H*100,th=.85-MV(NS-1)/100+.03-HOLD/100;add(M-(th+.12)*100,M-th*100);return o});
   addEventListener('resize',()=>{if(root.offsetParent){measure();frame()}});
@@ -7114,7 +7131,7 @@ const cwKit=(()=>{
         // a kind's group holds its bar and its two lines: the bar grows with the bars, the lines rise with the words
         else if(t==='g'){const k=wcol(el);[...el.children].forEach(c=>c.tagName==='rect'?bars[col(c)].push(c):words[k].push(c))}
         else word(el)}));
-      E.rects.forEach(r=>bars[2].push(r));E.labels.forEach(l=>words[2].push(l));heads.push(E.head);
+      E.rects.forEach(r=>bars[2].push(r));E.labels.forEach(l=>words[2].push(l));words[2].unshift(E.head);
       bars.forEach(c=>c.sort((a,b)=>(+a.getAttribute('y'))-(+b.getAttribute('y'))));
       const bar=el=>p=>{el.style.transformBox='fill-box';el.style.transformOrigin='50% 50%';el.style.transform=`scaleY(${p.toFixed(3)})`},
         rise=el=>p=>{el.style.opacity=p.toFixed(3);el.style.transform=`translateY(${((1-p)*5).toFixed(2)}px)`},
@@ -7287,15 +7304,26 @@ const cwKit=(()=>{
       SB=[T0];AU.steps.forEach(names=>{const s=SEG.find(x=>x.n===names[names.length-1]);SB.push(s.a+s.d)});NS=AU.steps.length;hh=tgt=dir=0;tt=T0};
     const frame=t=>{const s=SEG.find(x=>t<=x.a+x.d)||SEG[SEG.length-1],k=clamp((t-s.a)/s.d,0,1);return{pre:lerp(s.p0,s.p1,k),q:lerp(s.q0,s.q1,k),hl:lerp(s.h0,s.h1,k)}};
     const ttOf=h=>{if(h<=0)return SB[0];const k=Math.max(1,Math.min(NS,Math.ceil(h-1e-9)));return SB[k-1]+(h-(k-1))*(SB[k]-SB[k-1])};
-    /* r19 · the scrubbed model: every beat is a pure function of the smoothed scroll. o.runway lists [segment, screens, tag?]; a null segment is a hold (the frame stays).
-       The clip clock `tt` (ms on the run) is read off the scroll by a piecewise-linear map; phones spend 1.3x the runway. */
+    /* r19: every beat is a pure function of the smoothed scroll. o.runway lists [segment, screens, tag?]; a null segment is a hold.
+       Phones spend a little longer on the earlier beats. The reply's own scroll stays short: the zoom finishes with the
+       stream, and what follows is a beat on the whole message, then the next section. */
     let KN=null,TOTAL=0;
-    const buildScrub=()=>{buildAuto();const m=mqN.matches?1.3:1,T0=SB[0];let L=[],cur=SB[0];
-      o.runway.forEach(([n,sc,tag])=>{if(n){const s=SEG.find(x=>x.n===n);L.push({t0:s.a,t1:s.a+s.d,sc,tag})}else L.push({t0:cur,t1:cur,sc,tag});cur=L[L.length-1].t1});
+    const buildScrub=()=>{buildAuto();const phone=mqN.matches,T0=SB[0];let L=[],cur=SB[0];
+      const screens=(n,sc,tag)=>{if(!phone)return sc;if(n==='write')return 1.45;if(tag==='reply639')return .35;if(n==='close')return .2;if(n==='exit')return .25;if(!n)return .25;return sc*1.15};
+      o.runway.forEach(([n,sc,tag])=>{const use=screens(n,sc,tag);if(n){const s=SEG.find(x=>x.n===n);L.push({t0:s.a,t1:s.a+s.d,sc:use,tag})}else L.push({t0:cur,t1:cur,sc:use,tag});cur=L[L.length-1].t1});
       L=L.filter(k=>k.t1>T0||(k.t0===k.t1&&k.t0>T0)).map(k=>k.t0<T0&&k.t1>T0?{...k,sc:k.sc*(k.t1-T0)/(k.t1-k.t0),t0:T0}:k);
-      let p=0;KN=L.map(k=>{const a=p;p+=k.sc*m;return{...k,p0:a,p1:p}});TOTAL=p};
+      let p=0;KN=L.map(k=>{const a=p;p+=k.sc;return{...k,p0:a,p1:p}});TOTAL=p};
     const ttAt=pos=>{if(pos<=0)return KN[0].t0;for(const k of KN)if(pos<=k.p1)return k.t0===k.t1?k.t0:lerp(k.t0,k.t1,(pos-k.p0)/(k.p1-k.p0));return KN[KN.length-1].t1};
     const hhAt=t=>{if(t<=SB[0])return 0;for(let i=1;i<=NS;i++)if(t<=SB[i]+1e-6)return i-1+(t-SB[i-1])/(SB[i]-SB[i-1]);return NS};
+    /* phones: once the reply has finished streaming, the page moves on to the before-and-after. That section is its own
+       layout on a phone, and the reply itself is not a long passage to scrub. Scrolling back above the beat cancels it. */
+    let hopT=0,hopped=false;
+    function maybeHop(){if(!mqN.matches||mqR.matches||!KN)return;const k=KN.find(x=>x.tag==='reply639');if(!k)return;
+      const pos=-(sec.getBoundingClientRect().top)/innerHeight;
+      if(pos<k.p0-.2){hopped=false;clearTimeout(hopT);hopT=0;return}
+      if(pos<k.p0||hopped)return;hopped=true;clearTimeout(hopT);
+      hopT=setTimeout(()=>{hopT=0;if(!hopped||!mqN.matches)return;const next=document.getElementById('dsMobile')||document.getElementById('dissectSec');
+        if(next)next.scrollIntoView({behavior:'smooth',block:'start'})},900)}
     const draw=()=>{let k=frame(tt);
       /* the clone's draw-in must be whole before the highlight (or anything after it) starts: fast-finish it, hold the frame meanwhile */
       if(refs.SC&&refs.SC.done&&!refs.SC.done()){if(tt>SEG[0].a+SEG[0].d)refs.SC.ff&&refs.SC.ff();k=frame(Math.min(tt,SEG[0].a+SEG[0].d))}
@@ -7314,7 +7342,7 @@ const cwKit=(()=>{
       if(snap||force){if(pRaf){cancelAnimationFrame(pRaf);pRaf=0}hh=t;dir=0;tt=ttOf(hh);draw();return}
       if((hh!==tgt||!Number.isInteger(hh))&&!pRaf){pLast=performance.now();pRaf=requestAnimationFrame(loop)}};
     function tick(){raf=0;if(!refs)return;
-      if(o.scrub){if(!AU||!KN)buildScrub();if(park)return;const r=sec.getBoundingClientRect(),H=innerHeight,off=r.top>=H*.5||r.bottom<=H,t=ttAt(-(r.top+(off?0:SM.lag()))/H);if(last!==-1&&t===tt)return;last=0;tt=t;hh=tgt=hhAt(t);draw();return}
+      if(o.scrub){if(!AU||!KN)buildScrub();if(park)return;const r=sec.getBoundingClientRect(),H=innerHeight,off=r.top>=H*.5||r.bottom<=H,t=ttAt(-(r.top+(off?0:SM.lag()))/H);if(last!==-1&&t===tt){maybeHop();return}last=0;tt=t;hh=tgt=hhAt(t);draw();maybeHop();return}
       if(o.auto){if(!AU)buildAuto();retarget(last===-1);last=0;return}
       const p=prog(),k=p+(refs.SC?1-refs.pre:0)*10;if(Math.abs(k-last)<1e-4)return;last=k;paint(p)}
     addEventListener('scroll',()=>{if(refs&&o.auto)tick();else if(refs&&!raf)raf=requestAnimationFrame(tick)},{passive:true});
@@ -7586,6 +7614,22 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     const yIn=Math.round(CW.y+(ar.top+ar.height/2-wr.top)/k),yOut=Math.round(CW.y+(fr.bottom-wr.top)/k-22);
     r.wIn.forEach(p=>p.setAttribute('d',wIn(yIn)));r.wOut.forEach(p=>p.setAttribute('d',wOut(yOut)));r.lIn=r.pIn.getTotalLength();r.lOut=r.pOut.getTotalLength();
     r.full=fullH(W);W.el.style.height=h;r.placed=1}
+  /**
+   * Where the whole reply lands on a wide screen, in world units: centred in the pin, from 40px under the title block (or
+   * under Iteration I's title, whichever is lower) to 16px above the screen's bottom edge. Iteration I opens on that same
+   * rect, so the join carries one window at one size.
+   * @param {object} r the stage refs
+   * @returns {{cx:number,top:number,h:number,s:number}}
+   */
+  function zoomTo(r){const wr=r.world.getBoundingClientRect(),k=wr.width/WW||1,pin=sec.querySelector('.cw-pin')||sec,pr=pin.getBoundingClientRect(),ds=document.getElementById('dsRoot');
+    const capB=Math.max(0,...[...sec.querySelectorAll('.cw-caps .cw-cap.on')].map(c=>c.getBoundingClientRect().bottom-pr.top));
+    sec._zt=capB+40;
+    const top=pr.top+Math.max(capB+40,ds&&ds._tb||0),bot=pr.top+innerHeight-16,h=Math.max(120,bot-top)/k,s=Math.min(1,h/Math.max(1,r.full)),hEnd=r.full*s;
+    const Z={cx:(pr.left+pr.width/2-wr.left)/k,top:(top-wr.top)/k+(h-hEnd)/2,h:hEnd,s};
+    // the same rect on screen, as it sits while the pin holds (top measured from the pin): Iteration I's carried copy starts
+    // here even if the reader outran the zoom
+    sec._zr={l:wr.left+(Z.cx-CW.w*s/2)*k,t:wr.top-pr.top+Z.top*k,w:CW.w*s*k,h:hEnd*k};
+    return Z}
   // a status badge: hidden until its layer starts; then a teal ring runs a full turn over the layer's work; once it has
   // closed, a teal disc grows over it and the check draws itself; the layer's outline turns teal with it
   function setSt(s,q,[a0,a,z]){const vis=eo(sg(q,a0,a)),p=sg(q,a,z),dl=CFG.ckDelay,du=CFG.ckDur,dn=sg(q,z+dl,z+dl+du),ck=sg(q,z+dl+.004,z+dl+.004+du);// the full ring holds a beat before it turns
@@ -7649,14 +7693,16 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
        left as it gathers, the other two outcomes fold into the same bar, and the bands thin out as they arrive */
     const g0=U(q,'gather'),gt=eio(sg(g0,.15,.95)),sh=SHIFT*eio(sg(g0,.25,1)),wf=1-eo(sg(g0,.1,.4)),ot=eo(sg(g0,.45,1)),bf=1-eo(sg(g0,.6,1));
     const b0=r.E.bars[0],cy0=b0.y+b0.h/2;
-    r.E.g.setAttribute('transform',`translate(${f(sh)} 0)`);
+    // Story: the clone starts centred under the title and slides onto the echo; until it lands the echo rides with it, so
+    // the last column's bars and words sit on the clone's own ribbons the whole way
+    const scX=r.SC?lerp(r.SC.xCenter,r.SC.xEcho,eio(sg(r.pre,.05,.55))):0,eOff=r.SC?scX-r.SC.xEcho:0;
+    r.E.g.setAttribute('transform',`translate(${f(sh+eOff)} 0)`);
     r.E.bands.setAttribute('transform',gt>0?`translate(${BX} ${f(cy0)}) scale(${f(1-.3*gt)} ${f(1-.82*gt)}) translate(${-BX} ${f(-cy0)})`:'');
     // Story: before the pin's own timeline, the cloned Sankey holds, then its first two columns dissolve and its last
     // bands cross over to the echo's (r.pre 0 → 1 over the lead-in)
     const pre=r.SC?r.pre:1;if(r.SC){const hl=r.hl||0;
       /* hold/hl: chart centered under the title; as it dissolves, slide to the echo so the last column hands off cleanly */
-      const x=lerp(r.SC.xCenter,r.SC.xEcho,eio(sg(pre,.05,.55)));
-      r.SC.g.setAttribute('transform',`translate(${f(x)} ${f(r.SC.top-68)})`);
+      r.SC.g.setAttribute('transform',`translate(${f(scX)} ${f(r.SC.top-68)})`);
       r.SC.A.setAttribute('opacity',f((1-eio(sg(pre,.3,.85)))*(1-.7*hl)));r.SC.bp.forEach(([e,k])=>e.setAttribute('opacity',k?f(1-.9*hl):1));r.SC.B.setAttribute('opacity',f(1-sg(pre,.7,1)));r.SC.g.style.display=pre>=1?'none':''}
     r.E.bands.setAttribute('opacity',f(bf*sg(pre,.7,1)));r.E.bg.slice(1).forEach(e=>e.setAttribute('opacity',f((1-ot)*(1-.9*(r.hl||0)))));r.E.head.setAttribute('opacity',f(wf));r.E.labels.forEach((e,i)=>e.setAttribute('opacity',f(wf*(i?1-.8*(r.hl||0):1))));
     // the bars ride the bands' own squeeze (same factor, same center), so every band still ends on its bar; the two that
@@ -7666,10 +7712,10 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     /* HANDOFF. Primary: the channel slides in. "could answer", already squeezed with its bands, thins into the typing caret
        (a thin upright bar, never a dot) in its first half, then arcs into the composer, where the composer's own caret takes over */
     const h0=U(q,'handoff');
-    {const tk=r.E.rects[0],cd=eio(sg(h0,0,.5)),fl=sg(h0,.45,1),x0=BX+5+sh,y0=cy0;
+    {const tk=r.E.rects[0],cd=eio(sg(h0,0,.5)),fl=sg(h0,.45,1),x0=BX+5+sh+eOff,y0=cy0;
       // where the composer's caret sits in the empty box, in world units (re-measured through the hand-off, as the window settles)
       if(r.win&&r.placed&&(q<TB.ask||!r.cpos)&&q>=TB.handoff){const W=r.win,wr=W.el.getBoundingClientRect(),k=wr.width/W.el.offsetWidth||1,c=W.caret.getBoundingClientRect();
-        if(c.height>0)r.cpos={x:CW.x+((c.left-wr.left)/k+c.width/k/2),y:CW.y+((c.top-wr.top)/k+c.height/k/2)}}
+        if(c.height>0)r.cpos={x:(parseFloat(W.el.style.left)||CW.x)+((c.left-wr.left)/k+c.width/k/2),y:CW.y+((c.top-wr.top)/k+c.height/k/2)}}
       const cx=r.cpos?r.cpos.x:CW.x+30,cy=r.cpos?r.cpos.y:CW.y+CW.h-76;
       const px=lerp(x0,cx,eio(fl)),py=lerp(y0,cy,eo(fl))-Math.sin(Math.PI*fl)*44,w=lerp(10,2,cd),h=lerp(b0.h*gk,18,cd);
       tk.setAttribute('x',f(px-w/2));tk.setAttribute('y',f(py-h/2));tk.setAttribute('width',f(w));tk.setAttribute('height',f(h));tk.setAttribute('rx',f(w/2*cd));
@@ -7752,7 +7798,10 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     // dot (the old exit): the stack steps back to the left over 70% of the beat. caret (default) and dots: it folds into
     // Gemini's sparkles over the first half (exits faster), scaling toward them as it fades, and the sparkles carry on alone
     const SP=(CFG.exit==='caret'||CFG.exit==='dots')&&!!r.fly;
-    const fd=eo(U(q,'exit',0,SP?.5:.7));r.ST.style.opacity=f(1-fd);
+    // wide screens: from halfway through the stream the window heads for the middle and grows with the words, landing on the
+    // whole reply as the last word arrives; the stack steps back on that same move
+    const phone=SKN(),desk=!phone&&CFG.zoom?CFG.ez.carry(sg(sw,.5,1)):0;
+    const fd=Math.max(eo(U(q,'exit',0,SP?.5:.7)),desk);r.ST.style.opacity=f(1-fd);
     if(SP){r.ST.style.transformOrigin=`${r.spk.cx}px ${f(r.spk.cy)}px`;r.ST.style.transform=fd>0?`scale(${f(1-.45*fd)})`:''}
     else{r.ST.style.transformOrigin='';r.ST.style.transform=CFG.exit==='dot'?`translateX(${f(-24*fd)}px)`:''}
     r.gem.forEach(d=>{if(fd>0)d.style.opacity=f(+d.style.opacity*(1-fd))});
@@ -7762,15 +7811,27 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     // the status line (a dial, off by default): what the channel says while each part works
     if(r.say){const txt=q<arr('session')+.01||q>=at('write',.18)?'':say||(q>=TB.write?'is writing…':'is thinking…');
       if(r.say._t!==txt){r.say._t=txt;if(txt)r.say.lastChild.textContent=' '+txt}r.say.style.opacity=txt&&CFG.status?1:0}
-    // ZOOM: carried to the middle and grown to the whole reply on ONE eased progress (Bill): it reaches center stage
-    // and the zoomed-out view together. With the dial off, the window only glides (EXIT → ZOOM). Story keeps the same
-    // motion so the join lands on that rect with nothing left to stretch.
-    const mv=CFG.zoom?CFG.ez.carry(sg(q,TB.exit,TB.end)):0,cr=CFG.zoom?mv:CFG.ez.carry(sg(q,TB.exit,TB.zoom)),
-      gz=mv,H=lerp(CW.h,r.full,gz);
-    const fit=CW.fit,cyT=WH/2;
-    const z=Math.min(1,fit/H),hv=H*z;W._z=z;W._hv=hv;
-    W.el.classList.toggle('cw-follow',q>=at('write',.18)&&q<(CFG.zoom?TB.exit:TB.zoom));
-    Object.assign(W.el.style,{opacity:f(e),height:f(H)+'px',left:f(lerp(CW.x,(WW-CW.w*z)/2,cr))+'px',top:f(lerp(CW.y,cyT-hv/2,cr))+'px',
+    // ZOOM: on a wide screen the window is carried to the middle and grown to the whole reply together, during the exit.
+    // On a phone the stream is that move. The card centers and grows to fill the stage as the words arrive, and it is
+    // finished when they are. The whole reply stays at reading size inside the card; fitting all 639 words into the
+    // phone frame at once shrinks them past reading, so the short scroll after this beat moves on to the next section.
+    let cr,H,z,hv,L=null,T=null;
+    if(!phone&&CFG.zoom&&r.world){const Z=zoomTo(r),cL=Z.cx-CW.w/2,side=eio(U(q,'stack',0,.45));
+      // the layout follows what has streamed in, so the growing window never shows empty feed above the words
+      const need=W.bar.offsetHeight+W.scroll.offsetHeight+W.comp.offsetHeight+2;
+      cr=desk;H=lerp(CW.h,Math.max(CW.h,Math.min(r.full,need)),desk);hv=lerp(CW.h,Z.h,desk);z=hv/H;
+      // it enters in the middle and moves aside as the stack draws in, then comes back to the middle for the whole reply
+      L=lerp(lerp(cL,CW.x,side),Z.cx-CW.w*z/2,desk);T=lerp(CW.y,Z.top,desk)}
+    else if(phone){const stageEl=sec.querySelector('.cw-stage'),sW=stageEl?stageEl.clientWidth:360,sH=stageEl?stageEl.clientHeight:520;
+      const scale=Math.max(.2,(sW-28)/CW.w),cap=Math.max(320,Math.min(CW.h,sH/scale-28));
+      const need=W.scroll.offsetHeight+(W.bar?W.bar.offsetHeight:0)+(W.comp?W.comp.offsetHeight:0)+8;
+      cr=eio(Math.min(1,sw/.85));H=Math.min(cap,Math.max(lerp(cap*.62,cap,cr),Math.min(cap,need)));z=1;hv=H;
+      r.ST.style.opacity=f(1-cr)}
+    else{const dz=CFG.zoom?CFG.ez.carry(sg(q,TB.exit,TB.end)):0;cr=CFG.zoom?dz:CFG.ez.carry(sg(q,TB.exit,TB.zoom));H=lerp(CW.h,r.full,dz);
+      const fit=CW.fit;z=Math.min(1,fit/H);hv=H*z}
+    const cyT=WH/2;W._z=z;W._hv=hv;
+    W.el.classList.toggle('cw-follow',q>=at('write',.18)&&(phone?sw<.998:q<(CFG.zoom?TB.exit:TB.zoom)));
+    Object.assign(W.el.style,{opacity:f(e),height:f(H)+'px',left:f(L??lerp(CW.x,(WW-CW.w*z)/2,cr))+'px',top:f(T??lerp(CW.y,cyT-hv/2,cr))+'px',
       transform:`translateX(${f((1-e)*56)}px) scale(${f(z*1e4)/1e4})`});
     follow(W);
     flight(r,q,SP,z);
@@ -7787,19 +7848,15 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     // [segment, ms, pre (the Sankey's hand-over, 0 → 1), q (the stack's timeline, where the segment ends), hl (the band's highlight)]
     seq:[['hold',S.hold,0,0,0],['hl',S.hl,0,0,1],['dissolve',S.dissolve,1,0,1],['gather',S.gather,1,b.handoff,1],['handoff',S.handoff,1,b.ask,1],['ask',S.ask,1,b.stack,1],['stack',S.stack,1,b.worker,1],
       ['worker',S.worker,1,b.session,1],['session',S.session,1,b.model,1],['model',S.model,1,b.tools,1],['tools',S.tools,1,b.write,1],['write',S.write,1,b.close,1],['close',S.close,1,b.exit,1],['exit',S.exit,1,1,1]]}};
-  /* phones: where the camera looks. The window from the start (phones open at the handoff) through the typed ask, and again while the reply
-     comes back (it follows the window as it is carried to the middle); the stack while the ask runs down it */
-  /* phones: the camera frames the same window the wide layout moves and scales. While the ask runs the stack,
-     it looks at the stack; once the reply is the subject, it frames that window. A phone stage cannot hold the
-     whole reply at reading size, so the pull-back stops a little taller than the reading card instead of shrinking
-     the column to a hairline. */
+  /* phones: the camera frames the whole window. While the ask runs the stack it looks at the stack; once the reply
+     is the subject it frames that window, top to bottom, so the pull-back shows the message rather than a slice of it. */
   const cam=(r,q)=>{const pan=a=>eio(sg(q,a,a+.025)),w=clamp(1-pan(TB.worker)+pan(TB.write),0,1);
     const W=r.win,z=W&&W._z||1,hv=W&&W._hv||CW.h;
     const L=W&&W.el.style.left?parseFloat(W.el.style.left):CW.x,T=W&&W.el.style.top?parseFloat(W.el.style.top):CW.y;
-    const ww=CW.w*z,cap=ww*(CW.h/CW.w)*1.15,fh=Math.min(hv,cap),top=T+Math.max(0,(hv-fh)/2),pad=28*(fh/CW.h);
-    return{x:lerp(202,L+ww/2,w),y:lerp(WH/2,top+fh/2,w),w:lerp(420,ww+pad,w),h:lerp(600,fh+pad,w)}};
+    const ww=CW.w*z,pad=22;
+    return{x:lerp(202,L+ww/2,w),y:lerp(WH/2,T+hv/2,w),w:lerp(420,ww+pad*2,w),h:lerp(600,hv+pad*2,w)}};
   /* r19 runway (screens per beat, desktop; phones x1.3): the old step model spent 8 zones x .6 = 4.8 screens on these. [segment, screens, tag]; null = hold */
-  const RUNWAY=[['hold',.5],['hl',.6],[null,.5,'hl53'],['dissolve',.7],['gather',.5],['handoff',.4],['ask',.9],['stack',1],['worker',1],['session',1],['model',1],['tools',1],['write',1.6],[null,.5,'reply639'],['close',.5],['exit',1],[null,.5]];
+  const RUNWAY=[['hold',.5],['hl',.6],[null,.5,'hl53'],['dissolve',.7],['gather',.5],['handoff',.4],['ask',.9],['stack',1],['worker',1],['session',1],['model',1],['tools',1],['write',1.6],['close',.25],['exit',.25],[null,.6,'reply639']];
   drive(sec,{WW,WH,CWW:CW.w,build,render,caps:capsFor,auto:AUTO,scrub:true,runway:RUNWAY,remeasure:r=>{r.placed=0},cam,q0:TB.ask,/* phones open with the window in and the composer ready */
     phone:{layers:LAYERS,cap1:STEPCAP[1],cap2:STEPCAP[7].replace(/<\/?b>/g,'')},
     frames:[{q:.005,crop:[520,-10,560,664],cap:STEPCAP[0]},
@@ -9514,7 +9571,7 @@ sec._cf = { B, ORDER, TIMING, run, stage, layout, wake, STOPS, goBeat, PH, STEPS
 /* ======================= the page's chrome: the chapter list, the progress hairline, the review jumper ======================= */
 (function chrome(){const hero=$('#hero'),farm=$('#farmSec'),toc=$('.toc'),prog=$('.prog');
   const CH=[['hero','Cover'],['problem','I became the team’s search engine'],['prototype','Could an agent answer them?'],['dissectSec','Making it a bot with manners'],['carouselSec','The MVP for everyday questions'],['pilot','A tryout with the team'],
-    ['iter2','Room for improvement'],['btSec','Tunings behind the scenes'],['rsSec','Keeping score'],['reflection','Setting the GOAT free'],['farmSec','Agent farm']];
+    ['iter2','Room for improvement'],['btSec','Tunings behind the scenes'],['rsSec','A triple-double for the team'],['reflection','Setting the GOAT free'],['farmSec','Agent farm']];
   const reduceM=matchMedia('(prefers-reduced-motion: reduce)').matches,wide=matchMedia('(min-width:1280px)');
   /* a chapter link: scroll to its opener (a jump under reduced motion), then focus its heading */
   const go=id=>{const t=document.getElementById(id);if(!t)return;(id==='iter2'?document.querySelector('#cfSec .run'):t).scrollIntoView({block:'start',behavior:reduceM?'auto':'smooth'});
@@ -9546,7 +9603,7 @@ sec._cf = { B, ORDER, TIMING, run, stage, layout, wake, STOPS, goBeat, PH, STEPS
 
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',sankey);
 })();
-/* ======================= RESULTS (#rsSec) · Keeping score =======================
+/* ======================= RESULTS (#rsSec) · A triple-double for the team =======================
    Three data-viz tiles fade up 40ms apart once half the row is in view; their numbers count up once; the bars and the matrix
    draw (CSS, on .is-in). The matrix is the old ledger's: one square per answer checked, the two unsure ones where their rows
    were (17 and 40). The info icon beside the heading shows the source line. The notes tile is the quick-question wall's pile: each reply lands from the middle outward

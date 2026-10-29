@@ -5738,7 +5738,8 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
                each, .02 apart) · .64–.82 the list folds shut under Sources, like Thinking's · .66 After, as it folds
        step 9  .30 the disclaimer's unmarked words leave piece by piece (all gone by .44) · .40 its two marked phrases fly
                into the caption (.14 each, .07 apart) · .52–.62 the caption's dot · .50–.72 its space closes · .62 After */
-  const TL={bDraw:[0,.1],bLead:[.04,.14],bCall:[.08,.16],kw:[.12,.1,.04],ckw:[.14,.1],dim:[.3,.42],bo:[.48,.56],morph:[.42,.72],bx:.4,ax:[.5,.9],a0:.6,prev:[.1,.18]},
+  const TL={bDraw:[0,.1],bLead:[.04,.14],bCall:[.08,.16],kw:[.12,.1,.04],ckw:[.14,.1],dim:[.3,.42],bo:[.48,.56],morph:[.42,.72],bx:.4,ax:[.5,.9],a0:.6,prev:[0,.07]},
+    aOf=s=>Math.max(s.a0||TL.a0,(s.bo||TL.bo)[1]+.02),awOf=s=>{const a=aOf(s);return a!==TL.a0?Math.min(1,(.98-a)/.24):1},
     T2={hl:[.12,.08,.045],fly:[.32,.07,.11],lo:[.44,.05,.6],close:[.52,.7],done:.7,fold:[.72,.97]},
     T8={lab:[.3,.35],open:[.35,.42],fly:[.34,.02,.1],fold:[.64,.82]},T8f=.3,
     T9={lo:[.3,.05,.44],fly:[.4,.07,.14],sep:[.52,.62],close:[.5,.72]},
@@ -5927,15 +5928,15 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
   function marks(k,p){if(!k||p<=0){hide(OB);hide(OA);return}
     const R=pin.getBoundingClientRect(),F=feed.getBoundingClientRect(),W=win.getBoundingClientRect(),s=STEPS[k-1];
     // a step with a long rebuild (two, eight, nine) brings its After in later, and draws it a little quicker
-    // the Before's box and leader leave with the raw part (bo); its callout reads on until the After's callout arrives, the two
-    // crossing at half strength (the After's callout is centered on a0+.13), so one callout is always up
-    const bo=s.bo||TL.bo,a0=s.a0||TL.a0,aw=s.a0?Math.min(1,(.98-a0)/.24):1,am=a0+.13*aw,gOut=1-sg(p,bo[0],bo[1]),cOut=1-sg(p,am-.03,am+.05);
-    if(p<Math.max(bo[1],am+.05)){setB(k);let u=rect(parts.filter(q=>q.k===k&&q.h>.5&&q.b.innerHTML&&!q.rx).flatMap(bEls),F);
+    // strictly one side at a time: the Before (box, leader, callout) plays out and leaves with the raw part (bo), and only
+    // then does the After draw on; the last step's After has left (prev) before this Before starts
+    const bo=s.bo||TL.bo,a0=aOf(s),aw=awOf(s),gOut=1-sg(p,bo[0],bo[1]),cOut=1-sg(p,bo[1]-.04,a0-.01);
+    if(p<a0){setB(k);let u=rect(parts.filter(q=>q.k===k&&q.h>.5&&q.b.innerHTML&&!q.rx).flatMap(bEls),F);
       // once the raw part has closed, the callout stays where it was (or, reached from below, level with where the part sits)
       if(u){bU=u;bUk=k}else if(bUk===k)u=bU;else{const q=parts.find(q=>q.k===k&&q.b.innerHTML&&!q.rx);if(q){const e=q.el.getBoundingClientRect();u={l:e.left,r:e.right,t:e.top-10,b:e.top+10,rad:6}}}
       // one sequence on the step's p: the last connector retracts, the window settles on this part, then this one draws on
       // (box, then leader, then its callout), never later than leaves room before the raw part goes
-      const cd=DC.cDraw,b0=clamp(GLE,0,Math.max(0,bo[0]-.08-cd)),db=b0-TL.bDraw[0];
+      const cd=DC.cDraw,b0=clamp(Math.max(GLE,TL.prev[1]),0,Math.max(0,bo[0]-.08-cd)),db=b0-TL.bDraw[0];
       if(u){mark(OB,u,'l',sg(p,b0,b0+cd),sg(p,b0+.4*cd,b0+1.4*cd),sg(p,TL.bCall[0]+db,TL.bCall[1]+db)*cOut,R,W,TBB,false,!!s.zone);OB.g.style.opacity=gOut.toFixed(3);
         const bl=o=>o<1?`blur(${((1-o)*2.5).toFixed(2)}px)`:'';OB.g.style.filter=bl(gOut);OB.c.style.filter=bl(cOut);sweep(cHL(OB),p,TL.ckw[0]+db,TL.ckw[1]);dz(OB.c,eio(sg(p,TL.ckw[0]+db,TL.ckw[0]+db+TL.ckw[1])))}else hide(OB)}else hide(OB);
     if(p>a0){setA(k);const el=TG[k-1],u=el&&rect([el],F),rg=ringOf(el);if(u){aU=u;aUk=k;const eo=k===NS?1-sg(endP,0,.5):1,cd=DC.cDraw,dr=sg(p,a0,a0+cd*aw);mark(OA,u,'r',dr,sg(p,a0+.4*cd*aw,a0+1.4*cd*aw),sg(p,a0+.08*aw,a0+.18*aw)*eo,R,W,TA,rg);fade(OA,eo);setRing(rg?el:null,eio(dr)*eo);
@@ -6013,7 +6014,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
         const m9=eio(sg(Pn[NS-1],...T9.close));q.h=lerp(q.hb,q.ha,m9);q.el.style.height=q.h+'px'}});
     // the highlighter on each step's key words: the raw part's sweep on with its Before; the rebuilt part's with its After, and
     // fade as the next step begins (the last one's as the whole reply comes in)
-    STEPS.forEach((s,i)=>{const p=Pn[i],a0=s.a0||TL.a0,aw=s.a0?Math.min(1,(.98-a0)/.24):1,ho=1-(nextI(i)<NS?sg(Pn[nextI(i)],...TL.prev):sg(endQ,0,.06));sweep(KB[i],p,TL.kw[0],TL.kw[1],i===3?.01:i===4?.008:TL.kw[2]);sweep(KA[i],p,a0+.12*aw,.1*aw,.04*aw);hlo(KA[i],ho);
+    STEPS.forEach((s,i)=>{const p=Pn[i],a0=aOf(s),aw=awOf(s),ho=1-(nextI(i)<NS?sg(Pn[nextI(i)],...TL.prev):sg(endQ,0,.06));sweep(KB[i],p,TL.kw[0],TL.kw[1],i===3?.01:i===4?.008:TL.kw[2]);sweep(KA[i],p,a0+.12*aw,.1*aw,.04*aw);hlo(KA[i],ho);
       // and the words round the marked ones step back as the marker runs (the monologue's as its chunks are marked)
       const db=i===1?eio(sg(p,T2.hl[0],T2.hl[0]+T2.hl[1])):KB[i].length?eio(sg(p,TL.kw[0],TL.kw[0]+TL.kw[1])):0,da=KA[i].length?eio(sg(p,a0+.12*aw,a0+.22*aw))*ho:0;
       parts.forEach(q=>{if(q.k===i+1){dz(q.b,db);dz(q.a,da)}})});
@@ -6095,7 +6096,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
     meter.style.opacity=k&&!end?1:0;
     // the manners, beside the window from the title on: a step lights the manner(s) it embodies once its After arrives (the
     // last step's hold while the next one's Before reads); every one lights at the end; the rest stay desaturated
-    let on=[];if(end)on=Object.keys(MN);else if(k){const s=STEPS[k-1];if(Pn[k-1]>=(s.a0||TL.a0))on=MS(s);else if(prevK(k)>0&&Pn[k-1]<TL.prev[1])on=MS(STEPS[prevK(k)-1])}lit(lgLi,on);
+    let on=[];if(end)on=Object.keys(MN);else if(k){const s=STEPS[k-1];if(Pn[k-1]>=aOf(s))on=MS(s);else if(prevK(k)>0&&Pn[k-1]<TL.prev[1])on=MS(STEPS[prevK(k)-1])}lit(lgLi,on);
     // the manners list's side keeps that side's callouts below it
     const tl=root.dataset.take||'left',th=take.offsetHeight+28;take.style.top=TB+'px';TA=tl==='right'?TB+th:TB;TBB=tl==='left'?TB+th:TB;
     // step 6: Review pressed, then the pop-up with the details; scrolling on into step 7 dismisses it
@@ -6114,7 +6115,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
         const rg=sg(p6,...T6.ring),re=1-Math.pow(1-rg,3);if(rg>0&&rg<1){const R=Math.hypot(Math.max(cx,bw-cx),Math.max(cy,bh-cy));ring.style.opacity='1';Object.assign(ring.style,{left:L+'px',top:T+'px',width:bw+'px',height:bh+'px',transform:`scale(${bs.toFixed(4)})`});
           Object.assign(ring.firstChild.style,{left:cx+'px',top:cy+'px',width:2*R+'px',height:2*R+'px',opacity:(.5*(1-rg)).toFixed(3),transform:`translate(-50%,-50%) scale(${(.15+.85*re).toFixed(3)})`})}}}
     // the word count sits in the channel bar, from the zoom-out on (when the whole reply is in view); it zooms with the window, as part of it
-    const wcOn=end||(landed&&v>=150&&S>=1&&ux>=.5);wc.style.transition=jn&&u1<1?'none':'';wc.classList.toggle('on',wcOn);/* on from the swap frame, no fade: the MVP's count was already there */if(!wcOn&&shownN!=null){shownN=null;wd.classList.remove('on');wd.textContent=''}if(wcOn){let j=end?NS:0;if(!end)STEPS.forEach((s,i)=>{if(Pn[i]>=(s.a0||.6))j=i+1});flip(LOW[j])}// it changes only as a step's rebuild lands
+    const wcOn=end||(landed&&v>=150&&S>=1&&ux>=.5);wc.style.transition=jn&&u1<1?'none':'';wc.classList.toggle('on',wcOn);/* on from the swap frame, no fade: the MVP's count was already there */if(!wcOn&&shownN!=null){shownN=null;wd.classList.remove('on');wd.textContent=''}if(wcOn){let j=end?NS:0;if(!end)STEPS.forEach((s,i)=>{if(Pn[i]>=aOf(s))j=i+1});flip(LOW[j])}// it changes only as a step's rebuild lands
     // the stepper: a silent dot per step, the one in play stretched; no words
     if(k)meter.innerHTML=`<span class="ds-dots">${STEPS.map((x,i)=>skip(i+1)?'':`<i class="${i+1<k?'d':''}${i+1===k?' on':''}"></i>`).join('')}</span>`;
     marks(end?0:k,k?Pn[k-1]:0);flyStage(fly,T);flyStage(r4.F,F4,DC.ezFly);flyStage(r5.F,F5,DC.ezFly);flyStage(r8.F,F8);flyStage(r9.F,F9);waitMorph(M[1],1-.4*C[1]);dialFly(v)}
@@ -8606,14 +8607,14 @@ const TIMING = {
                14  the quote leaves; the amber drains straight to the settled graph under the fix caption  1800
        fix     15  le goat's own message lands as a new step                                            1000
                16  the one proposal for both                                                            1200
-               17  accepted; the chips flip to green 13, one by one; the card turns to Sure             2300  (zone .3)
+               17  accepted; the chips flip to green 13, one by one; the card turns to Sure             3600  (zone .3)
        callback 18 one clip: the graph rises, each source flies back into Sources (4) with Updated, the graph leaves, the thread re-forms, the reply rewrites, the Sure callout   4000
        better  19  the 2×2 again                                                                        1000
                20  the unsure dots migrate to 52 of 56                                                  2200 */
   play: { zone: .6, hys: .05, rev: 1.5, fin: 200 },
   steps: [['entry', 0, 1, 1500], ['ask', 0, .4, 1200, .8, 1], ['ask', .4, 1, 2000], ['unsure', 0, .36, 2500], ['unsure', .36, .64, 2000], ['unsure', .64, 1, 2200],
     ['map', 0, .26, 1500], ['map', .26, 1, 2500], ['history', 0, .54, 2000], ['history', .54, 1, 2300], ['whatif', 0, .3, 2000], ['whatif', .3, .56, 2300], ['whatif', .56, .75, 1500], ['whatif', .75, 1, 1800],
-    ['fix', 0, .2, 1000], ['fix', .2, .34, 1200], ['fix', .34, 1, 2300, .3], ['callback', 0, 1, 4000], ['better', 0, .2, 1000], ['better', .2, 1, 2200]],
+    ['fix', 0, .2, 1000], ['fix', .2, .34, 1200], ['fix', .34, 1, 3600, .3], ['callback', 0, 1, 4000], ['better', 0, .2, 1000], ['better', .2, 1, 2200]],
   /* a step's zone (screens of scroll before the next step triggers) is play.zone unless its row's fifth value says so */
   unsure: { think: [.02, .1], stream: [.12, .36], shift: [.36, .42], hl: [.42, .5], dim: [.44, .52], bar: [.5, .55], lead: [.53, .6], call: [.58, .64], more: [.66, .72], open: [.72, .84], srcHi: [.86, .93] },
   mapK: { callOut: [0, .04], dissolve: [.04, .14], glide: [.1, .24], heads: [.22, .3], draw: [.26, .86], flyDur: .12 },
@@ -8621,7 +8622,7 @@ const TIMING = {
   flip: { wait: 260, step: 240, dur: 320 },
   /* the amber tile, three frames (+ the drain), all on one beat state with the field: the question alone, large (frame 1); the same question down to subsection size at the top, the Sankey and its line under it (frame 2); the pull quote alone (frame 3) */
   whatif: { grow: [.02, .2], fill: [.18, .26], wash: [.26, .30], qIn: [.26, .30], qMove: [.31, .38], skIn: [.385, .435], hl: [.445, .53], aOut: [.58, .62], bIn: [.62, .68], bOut: [.77, .81], cam: [.80, .90], drain: [.80, .97] },
-  fix: { msg: [.02, .12], card: [.22, .27], auto: [.46, .56], fixed: .56 },
+  fix: { msg: [.02, .12], card: [.22, .27], auto: [.40, .60], fixed: .60 },
   /* the records' two flights, each on a clock (ms from the moment the beat reaches it; it starts over when the beat is reached afresh)
 
        map-out · every record in date order, 120ms apart; a record with a source in the box gets its flight
@@ -9226,7 +9227,7 @@ function render(dt) {
   else if (at('callback')) { winO = eo(rw2(kx, CB.winIn)); wX = shift }
   else if (at('better')) { winO = 1 - eo(r(b('better'), 0, .08)); wX = shift }
   op(win, winO);
-  win.style.transform = `translate(${wX}px,${wY}px) scale(${wS})`; win.style.filter = at('ask') && winO > 0 && winO < 1 && !reduce ? `blur(${(2 * (1 - winO)).toFixed(2)}px)` : '';
+  win.style.transform = `translate(${wX}px,${wY}px) scale(${wS})`; win.style.borderRadius = ''; win.style.filter = at('ask') && winO > 0 && winO < 1 && !reduce ? `blur(${(2 * (1 - winO)).toFixed(2)}px)` : '';
   win.style.zIndex = at('callback') || at('map') ? '4' : '';
 
   /* ask · the dot that becomes the caret, the typing */

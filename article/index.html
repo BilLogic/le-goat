@@ -1780,7 +1780,7 @@ const K=CASES.map((c,i)=>{const el=$(`.case[data-c="${i}"]`,casesEl),[wb,wa]=$$(
   const hasB=c.bt(wb).some(e=>e),hasA=c.at(wa).some(e=>e);t.mB=hasB?t.bot+t.stream+T.mark2:-1;t.a0=t.bot+t.stream+(hasB?T.mark2+T.markB:T.gap);
   if(live){t.rows=$$('li',live).map((_,k)=>t.a0+250+T.row*k);t.fold=t.a0+250+T.row*t.rows.length+300;t.parts=t.fold+250}
   else t.parts=t.a0+150;
-  t.aEnd=t.parts+T.stagger*A.parts.length+500;t.c0=hasA?t.aEnd+T.mark2:-1;t.end=t.aEnd+T.mark2+T.hold;
+  t.aEnd=t.parts+T.stagger*A.parts.length+500;t.c0=hasA?t.aEnd+T.mark2:-1;t.end=t.aEnd+T.mark2+(i===0?2000:T.hold);/* the first manner's Thinking rows already spend the time a hold would */
   const k={c,el,B,A,live,t,lf:null,callB:$('.call.b',el),callA:$('.call.a',el)};
   $$('.live-h',el).forEach(h=>h.addEventListener('click',()=>{const L=h.closest('.live');if(!L.classList.contains('folded'))return;const o=L.classList.toggle('open');h.setAttribute('aria-expanded',o);const tk=$('.tkr',L);tk.style.height=o?tk.firstElementChild.scrollHeight+'px':'0px'}));
   $$('.srcs',el).forEach(b=>b.addEventListener('click',()=>{const o=b.parentElement.classList.toggle('open');b.setAttribute('aria-expanded',o)}));
@@ -3023,7 +3023,9 @@ window.lgfSteps=window.lgfSteps||function(fig,cfg){
 /* opacity hides a scene without letting children punch through (visibility:hidden would); all scenes still size the grid */
 .lgpa .pa-sc{grid-area:1/1;opacity:0;pointer-events:none;z-index:0;display:grid;grid-template:1fr/1fr}
 .lgpa .pa-sc.cur{opacity:1;pointer-events:auto;z-index:1}
-.lgpa .pa-sc>.sk{grid-area:1/1;min-width:0}
+.lgpa .pa-sc>.sk{grid-area:1/1;min-width:0;height:var(--pa-h,auto)}
+/* measuring: every timed line shown, so the frame can take the tallest finished scene's height */
+.lgpa.pa-measure [data-at]{display:revert!important}.lgpa.pa-measure .msg[data-at]{display:grid!important}.lgpa.pa-measure :is(.decided,.reacts)[data-at]{display:flex!important}
 .lgpa .pa-sc>.sk.gone{display:flex!important;visibility:hidden;pointer-events:none}
 /* the site's Slack window */
 .lgpa .sk{position:relative;inset:auto;display:flex;flex-direction:column;font-family:var(--slack);color:var(--sk-text);background:var(--surface);
@@ -3146,6 +3148,10 @@ window.lgfSteps=window.lgfSteps||function(fig,cfg){
       o.until.forEach(e=>e.classList.toggle('gone',t>=+e.dataset.until));
       o.press.forEach(e=>{const p=+e.dataset.press;e.classList.toggle('pressed',t>=p&&t<p+400)});
       o.pick.forEach(e=>{const on=t>=+e.dataset.pick;e.classList.toggle('pick',on);e.parentNode.classList.toggle('picked',on)})}});
+  /* one frame for all three scenes, the tallest finished one, so the chat never changes size as lines arrive or scenes change (the GIF export) */
+  const box=fig.querySelector('.pa-scenes'),fit=()=>{box.style.removeProperty('--pa-h');fig.classList.add('pa-measure');
+    const h=Math.max(...sc.map(s=>s.querySelector('.sk').offsetHeight));fig.classList.remove('pa-measure');box.style.setProperty('--pa-h',h+'px')};
+  fit();if(document.fonts)document.fonts.ready.then(fit);new ResizeObserver(()=>{if(box.offsetWidth!==box._w){box._w=box.offsetWidth;fit()}}).observe(box);
 })();
 
 </script>

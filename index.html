@@ -4033,7 +4033,7 @@ const K=CASES.map((c,i)=>{const el=$(`.case[data-c="${i}"]`,casesEl),[wb,wa]=$$(
   const hasB=c.bt(wb).some(e=>e),hasA=c.at(wa).some(e=>e);t.mB=hasB?t.bot+t.stream+T.mark2:-1;t.a0=t.bot+t.stream+(hasB?T.mark2+T.markB:T.gap);
   if(live){t.rows=$$('li',live).map((_,k)=>t.a0+250+T.row*k);t.fold=t.a0+250+T.row*t.rows.length+300;t.parts=t.fold+250}
   else t.parts=t.a0+150;
-  t.aEnd=t.parts+T.stagger*A.parts.length+500;t.c0=hasA?t.aEnd+T.mark2:-1;t.end=t.aEnd+T.mark2+T.hold;
+  t.aEnd=t.parts+T.stagger*A.parts.length+500;t.c0=hasA?t.aEnd+T.mark2:-1;t.end=t.aEnd+T.mark2+(i===0?2000:T.hold);/* the first manner's Thinking rows already spend the time a hold would */
   const k={c,el,B,A,live,t,lf:null,callB:$('.call.b',el),callA:$('.call.a',el)};
   $$('.live-h',el).forEach(h=>h.addEventListener('click',()=>{const L=h.closest('.live');if(!L.classList.contains('folded'))return;const o=L.classList.toggle('open');h.setAttribute('aria-expanded',o);const tk=$('.tkr',L);tk.style.height=o?tk.firstElementChild.scrollHeight+'px':'0px'}));
   $$('.srcs',el).forEach(b=>b.addEventListener('click',()=>{const o=b.parentElement.classList.toggle('open');b.setAttribute('aria-expanded',o)}));

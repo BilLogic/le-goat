@@ -3966,13 +3966,13 @@ const THK=`<div class="live"><button type="button" class="live-h" aria-expanded=
 /* the four manners, in the article's order; the captions are the article's */
 const Q_DP='which date picker should I use for the tutor availability form? is there a range one too?';
 const CASES=[
- {h:'Show it’s working',p:'A question used to meet silence, then a wall of text. Now “Thinking” appears right away, with the steps folded under it and a Stop button.',
+ {h:'Show it’s working',p:'“Thinking” appears at once, with Stop.',
   q:Q_DP,wait:'3 min 56 s later',
   before:[BODY(`<p>${HL('Okay, let me think about this.')} The user wants a date picker for a form, so first I should search the design system for “date picker”, then check GitHub and maybe Figma. Searching… I found DatePicker under Forms. ${HL('Wait, maybe Inputs too? No, only Forms.')} It looks like there are three variants. The user asked about a range one, so I should also check how often each one is used. Okay, writing the answer.</p>`)],
   after:[THK,BODY(`<p><b>Use the single-date picker; it’s under Forms.</b> For a block of days off, switch to its range variant.</p>`)+FOOT],
   bt:w=>[$('.ds-wait',w),...$$('.bot .mb p',w)],at:w=>[$('.live',w)],
   pain:'Four silent minutes. Is it even working?',act:'Shows it’s thinking right away, with Stop.',val:'So you can redirect it early.'},
- {h:'Get to the point',p:'The answer comes first, in one line; sources fold away, and a comparison becomes a small table.',
+ {h:'Get to the point',p:'Answer first; sources fold away.',
   q:Q_DP,
   before:[BODY(`<p>**Great question!** Date pickers are an important part of any form, and choosing the right one can make a big difference to the overall user experience. In our design system, the date picker lives under the **Forms** category, alongside text fields, selects and checkboxes.</p><p>### Recommendation</p><p>For the tutor availability form, you will ${HL('most likely want the single-date variant')}, because availability is usually entered one day at a time, although for a block of days, such as time off, the range variant might be more appropriate. It really depends on how the form is structured.</p>`)],
   after:[BODY(`<p><b>${HL('Use the single-date picker; it’s under Forms.','a')}</b> For a block of days off, switch to its range variant.</p>`),
@@ -3980,14 +3980,14 @@ const CASES=[
     SRCS(SRC_DP)+FOOT],
   bt:w=>$$('.bot .mb p',w),at:w=>[$('.bot .mb p',w)],
   pain:'The answer hides in paragraph two.',act:'Leads with a one-line answer.',val:'Details follow if you want them.'},
- {h:'Know what you don’t know',p:'When the sources don’t answer the question, le goat says what it couldn’t find and who would know.',
+ {h:'Know what you don’t know',p:'Says what it couldn’t find, and who would know.',
   q:'was the range date picker approved?',
   before:[BODY(`<p>Yes! The range picker was ${HL('**approved by the design team in the spring**')} as the recommended default for anything involving more than one date, so you can go ahead and use it with confidence.</p>`),
     BODY(`<p><b>References:</b></p><ol class="ds-refs">${REFL.map(u=>`<li>${u}</li>`).join('')}</ol>`)],
   after:[BODY(`<p>${HL('I couldn’t find','a')} where the range variant was approved. The component source marks it stable; the revamp notes are silent. ${HL('The Design lead would know.','a')}</p>`),SRCS(SRC_ALL),FOOT+THUMBS],
   bt:w=>[$('.bot .mb p',w)],at:w=>[$('.bot .mb p',w)],
   pain:'A confident claim with nothing behind it.',act:'Says what it couldn’t find.',val:'And names who would know.'},
- {h:'Leave the calls to people',p:'A proposed edit arrives on a card, and nothing changes until someone approves it.',
+ {h:'Leave the calls to people',p:'Edits wait on a card until someone approves.',
   q:'do the Forms guidelines say when to use the range picker?',
   before:[BODY(`<p>They didn’t, so ${HL('I’ve gone ahead and **updated the Forms guidelines in Notion**')} so they now say to use the range picker for time off, and ${HL('I rewrote the intro paragraph')} while I was there. That’s all done, so no action is needed on your part!</p>`)],
   after:[BODY(`<p>Not yet. They only cover the single-date picker.</p>`),
@@ -4128,7 +4128,7 @@ let rz=0;addEventListener('resize',()=>{cancelAnimationFrame(rz);rz=requestAnima
   </div>
 </section>
 
-<section class="st st-c" id="pilot"><div class="prose"><p class="k">Pilot test</p><h2>A tryout with the team</h2><p>I invited the whole team to ask le goat anything they used to bring to me, in Slack or in Figma. Within two weeks, they asked 228 questions, averaging 31 a day in week two. That’s more than three times my busiest week.</p></div></section>
+<section class="st st-c" id="pilot"><div class="prose"><p class="k">Pilot test</p><h2>A tryout with the team</h2><p>I invited the whole team to try le goat and ask it anything in Slack. And they kept asking: 228 questions in two weeks, averaging 31 a day in week two. That’s more than three times my busiest week.</p></div></section>
 
 
 
@@ -4182,7 +4182,7 @@ let rz=0;addEventListener('resize',()=>{cancelAnimationFrame(rz);rz=requestAnima
 <section id="cfSec" class="cf" data-proto="ask" aria-label="Competent, but not confident: from one unsure answer to the fix, and the same answer made sure">
 <div class="run">
   <div class="stage">
-    <div class="st" id="iter2"><div class="prose"><p class="k">Iteration II</p><h2>From answering to asking</h2><p>People were asking. The next question was whether the answers were any good.</p></div></div>
+    <div class="st" id="iter2"><div class="prose"><p class="k">Iteration II</p><h2>From answering to asking</h2><p>People were clearly using le goat. But I also wanted to know if I could trust its answers.</p></div></div>
     <div class="in">
       <div class="side">
         <div class="hs"></div>
@@ -4404,7 +4404,7 @@ let rz=0;addEventListener('resize',()=>{cancelAnimationFrame(rz);rz=requestAnima
         </div>
       </div>
     </div>
-    <figcaption class="fm-cap"><p class="sec-k fm-k">Sidebar</p><h3 id="fmTitle">What’s next: the agent farm</h3><p>Now that le goat is out of the barn, one idea we keep coming back to is giving it company: a few more Slack agents, each with its own personality and specialty. It’s a fun idea, not one we’re building yet.</p></figcaption>
+    <figcaption class="fm-cap"><p class="sec-k fm-k">Sidebar</p><h3 id="fmTitle">What’s next: the agent farm</h3><p>Now that le goat is out of the barn, I’ve been thinking about recruiting a few teammates. A sassy owl for critiques, a diligent mule for the dirty work, a quick horse for urgent requests. Every GOAT needs a team, right?</p></figcaption>
   </figure>
 </section>
 
@@ -7434,13 +7434,13 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
   const B=n=>{const i=ORDER.indexOf(n),a=TIMING.beats[n],b=i<ORDER.length-1?TIMING.beats[ORDER[i+1]]:1;return [a,Math.max(a+1e-4,b)]};
   const at=(n,u)=>{const [a,b]=B(n);return a+(b-a)*u},U=(q,n,u0=0,u1=1)=>sg(q,at(n,u0),at(n,u1));
   const TB=TIMING.beats;
-  const STEPCAP=['To find out, we made a simple prototype and asked it one of the questions that didn’t need me.','Here’s the path that question takes.',
-    'First, a server on Cloudflare picks up the mention and adds a 👀, so whoever asked knows it’s on it.',
-    'It hands the question to a session that keeps the thread’s context and the work in progress, so a long answer isn’t cut off.',
-    'The session calls Gemini through its API. The model reads the question and plans where to look.',
-    'Gemini uses the connectors as tools: it searches Notion, GitHub and the web, and keeps track of every source it reads.',
-    'The answer streams back into the thread, a few words at a time.',
-    'It worked. But the reply ran <b>639 words</b>, a Slack message almost nobody would finish reading.'];
+  const STEPCAP=['So Bryan and I built a quick Slack prototype and asked it one of the easy ones.','Here’s the path that question takes.',
+    'A small server on Cloudflare picks up the mention and reacts with 👀, so whoever asked knows le goat is on it.',
+    'It keeps track of the thread.',
+    'It hands the question to Gemini.',
+    'Gemini looks things up in Notion, GitHub and the web.',
+    'Then it writes back in the same thread.',
+    'It worked, however, a simple question could get a <b>639-word</b> essay in return.'];
   const CAPS=()=>STEPCAP.map((c,i)=>[c,'cw-s',i?[i+1]:[0,1]]);
   // what the channel shows while each part works (Slack's status line under the composer)
   const TOOLSAY=['is searching Notion…','is searching GitHub…','is searching the web…'];
@@ -7448,7 +7448,7 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
   const BX=875,BTOP=68,SHIFT=-405;// the echo sits where the Sankey's last column sat, then slides left by SHIFT
   const Y={w:112,d:265,m:419,t:572};// the layers' centres, evenly spaced
   // the chat window: on the right while the stack runs, then carried to the middle and grown to the reply's full length
-  const CW={x:592,y:40,w:480,h:600,fit:WH-24},CW0=480,CWP=372;
+  const CW={x:592,y:40,w:480,h:600,fit:WH-24},CW0=480,CWP=372,CWF=600;
   const MP=[PX-70,Y.m-30,140,60];// Gemini's plate [x, y, w, h], thickness included
   const TOOLS=['Notion','GitHub','Web'],tx=i=>PX+(i-1)*60,RANK=[1,0,2],TSTEP=.03;// the MVP's three tools, nearest first
   // [title, y, caption]: the layer, then the tooling it runs on. The tools are called through their own APIs (not MCP)
@@ -7632,7 +7632,14 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     const wr=W.el.getBoundingClientRect(),k=wr.width/W.el.offsetWidth||1,ar=W.ask.querySelector('.cw-body').getBoundingClientRect(),fr=W.feed.getBoundingClientRect();
     const yIn=Math.round(CW.y+(ar.top+ar.height/2-wr.top)/k),yOut=Math.round(CW.y+(fr.bottom-wr.top)/k-22);
     r.wIn.forEach(p=>p.setAttribute('d',wIn(yIn)));r.wOut.forEach(p=>p.setAttribute('d',wOut(yOut)));r.lIn=r.pIn.getTotalLength();r.lOut=r.pOut.getTotalLength();
-    r.full=fullH(W);W.el.style.height=h;r.placed=1;r.yIn=r.yOut=null}
+    r.full=fullH(W);
+    // phones: the pull-back's one fixed end, measured once: the width at which the whole reply has the stage's own shape, so
+    // the camera, framing it, holds the window at the same size on screen while the words shrink into it
+    if(SKN()){const st=sec.querySelector('.cw-stage'),A=st&&st.clientHeight?st.clientWidth/st.clientHeight:.6,w0=W.el.style.width;
+      const at=w=>{W.el.style.width=w+'px';return fullH(W)};let lo=CW.w,hi=1400;
+      for(let i=0;i<8;i++){const m=(lo+hi)/2;if((m+24)/(at(m)+24)<A)lo=m;else hi=m}
+      r.fw=Math.round(hi);r.fullF=at(r.fw);W.el.style.width=w0}
+    W.el.style.height=h;r.placed=1;r.yIn=r.yOut=null}
   /**
    * Phones: the window is shorter than the one place() measured, and its feed sits on the composer, so the posted ask and
    * the feed's last line sit higher than measured. Re-aim both wires at where they are now (the window is unscaled here).
@@ -7854,11 +7861,11 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
       L=lerp(lerp(cL,CW.x,side),Z.cx-CW.w*z/2,desk);T=lerp(CW.y,Z.top,desk)}
     else if(phone){const stageEl=sec.querySelector('.cw-stage'),sW=stageEl?stageEl.clientWidth:360,sH=stageEl?stageEl.clientHeight:520;
       const scale=Math.max(.2,(sW-28)/CW.w),cap=Math.max(320,Math.min(CW.h,sH/scale-28));
-      const need=W.scroll.offsetHeight+(W.bar?W.bar.offsetHeight:0)+(W.comp?W.comp.offsetHeight:0)+8;
       cr=eio(Math.min(1,sw/.85));const g=CFG.ez.carry(sg(sw,.5,1));
-      // and widens as it pulls back (mostly once the words are too small to read), so the whole reply lands larger
-      wv=lerp(CW.w,Math.max(CW.w,600),eio(sg(g,.2,1)));
-      H=clamp(lerp(cap,r.full,g),cap,Math.max(cap,need));z=1;hv=H;L=lerp(CW.x,(WW-wv)/2,cr)}
+      // and widens as it pulls back: width and height run on the same curve to one fixed end (the whole reply at CWF), so
+      // the frame only ever grows and the camera only ever pulls back
+      const HF=Math.max(cap,r.fullF||r.full);wv=lerp(CW.w,Math.max(CW.w,r.fw||CWF),g);
+      H=lerp(cap,HF,g);z=1;hv=H;L=lerp(CW.x,(WW-wv)/2,cr)}
     else{const dz=CFG.zoom?CFG.ez.carry(sg(q,TB.exit,TB.end)):0;cr=CFG.zoom?dz:CFG.ez.carry(sg(q,TB.exit,TB.zoom));H=lerp(CW.h,r.full,dz);
       const fit=CW.fit;z=Math.min(1,fit/H);hv=H*z}
     const cyT=WH/2;W._z=z;W._hv=hv;W._w=wv;W.el.style.width=f(wv)+'px';
@@ -7887,7 +7894,8 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     const W=r.win,z=W&&W._z||1,hv=W&&W._hv||CW.h;
     const L=W&&W.el.style.left?parseFloat(W.el.style.left):CW.x,T=W&&W.el.style.top?parseFloat(W.el.style.top):CW.y;
     const ww=(W&&W._w||CW.w)*z,pad=12;
-    return{x:lerp(202,L+ww/2,w),y:lerp(WH/2,T+hv/2,w),w:lerp(420,ww+pad*2,w),h:lerp(600,hv+pad*2,w)}};
+    // one frame size for the stack and the window, so the pan between them never zooms
+    return{x:lerp(202,L+ww/2,w),y:lerp(WH/2,T+hv/2,w),w:Math.max(420,ww+pad*2),h:Math.max(600,hv+pad*2)}};
   /* r19 runway (screens per beat, desktop; phones x1.3): the old step model spent 8 zones x .6 = 4.8 screens on these. [segment, screens, tag]; null = hold */
   const RUNWAY=[['hold',.5],['hl',.6],[null,.5,'hl53'],['dissolve',.7],['gather',.5],['handoff',.4],['ask',.9],['stack',1],['worker',1],['session',1],['model',1],['tools',1],['write',1.6],['close',.25],['exit',.25],[null,.6,'reply639']];
   drive(sec,{WW,WH,CWW:CW.w,build,render,caps:capsFor,auto:AUTO,scrub:true,runway:RUNWAY,remeasure:r=>{r.placed=0},cam,q0:TB.ask,/* phones open with the window in and the composer ready */
@@ -8574,27 +8582,27 @@ const CAPTIONS = {
   },
   beats: {
     entry: { ch: 'unsure', body: '' },
-    ask: { ch: 'unsure', body: 'Here’s one of the 19, recreated. A designer asks how big form field labels should be.' },
-    unsure: { ch: 'unsure', body: 'le goat finds three different answers and says it isn’t sure. Honest, but the designer is still stuck.' },
-    map: { ch: 'why', body: 'So I lined up every source in the order things happened. The highlighted row is where the team decided.' },
-    history: { ch: 'why', body: 'The team agreed on a size in Slack, and the code followed. But the PRD never caught up, and a later refactor quietly changed the code. le goat couldn’t tell which source was current.' },
+    ask: { ch: 'unsure', body: 'Here’s one of the 19, recreated. Someone asks how big the field labels on our forms should be.' },
+    unsure: { ch: 'unsure', body: 'le goat finds three answers: TBD, 13px and 14px. It can’t tell which is current.' },
+    map: { ch: 'why', body: 'So I lined up the sources in the order things happened. The decision is highlighted.' },
+    history: { ch: 'why', body: 'Design settled on 13px, and the code followed. But the PRD never caught up, and a later refactor changed the code to 14px.' },
     whatif: { ch: 'why', body: '' },
-    fix: { ch: 'sure', body: 'Now, every morning, le goat looks for sources that disagree. Here it brings the PRD’s owner the evidence and one fix for both.' },
-    callback: { ch: 'sure', body: 'The fixed sources flow back into the designer’s reply, and it edits itself once every source agrees: field labels are 13px.' },
+    fix: { ch: 'sure', body: 'Every Monday, le goat checks for sources that disagree, and brings the owner the evidence and one fix for both.' },
+    callback: { ch: 'sure', body: 'Once every source agrees, the reply edits itself: field labels are 13px.' },
     better: { ch: 'better', body: 'Every accepted fix leaves a cleaner source. Of the next 56 answers I checked, 52 were sure and right.' }
   },
   tile: {
-    caption: 'Looking back at the 2,413 asks, 204 (8.5%) were someone checking which version was right. Those were the questions that kept the team aligned and the docs current.',
-    lead: 'A real GOAT doesn’t just answer questions. They ask the important ones that keep everyone aligned.',
+    caption: 'Of the 2,413 asks, 204 (8.5%) were people checking which version of something was right. Those questions caught discrepancies and kept the team aligned.',
+    lead: 'A real GOAT doesn’t just answer questions. They know which questions need asking.',
     question: 'What if le goat raised the questions itself?'
   },
   live: {
     entry: '56 answers checked: 37 sure and right, 19 unsure, none confidently wrong.',
-    unsure: 'le goat finds TBD, 13 and 14px and says it is not sure which is current. So I opened the sources.',
-    history: 'The team agreed 13px on Mar 18. The PRD still says TBD, and a token refactor drifted the code to 14.',
-    whatif: 'What if le goat raised the questions itself? Looking back at the 2,413 asks, 204, or 8.5%, were someone checking which version was right. Those were the questions that kept the team aligned and the docs current. “A real GOAT doesn’t just answer questions. They ask the important ones that keep everyone aligned.”',
-    fix: 'On Monday, le goat’s sweep spots that the PRD and the code both miss the decision and offers one fix for both. Swipe right or press Fix both.',
-    callback: 'The fixed sources return to the reply, which now reads: field labels are 13px.',
+    unsure: 'le goat finds TBD, 13px and 14px, and can’t tell which is current.',
+    history: 'The team agreed 13px on Mar 18. The PRD never caught up, and a refactor changed the code to 14px.',
+    whatif: '204 of the 2,413 asks (8.5%) were people checking which version was right. A real GOAT knows which questions need asking.',
+    fix: 'Every Monday, le goat flags the discrepancy and brings one fix for both. Swipe right or press Fix both.',
+    callback: 'Once every source agrees, the reply reads: field labels are 13px.',
     better: 'More unsure answers move to sure and right: 52 of 56.'
   }
 };
@@ -8882,7 +8890,7 @@ function sankey(VW, VH, narrow) {
   const FC = tone(FIT.map(n => sum(SK2, 1, n)), 30, 100).map(pc => mix('#1683b0', pc));
   const W = 10, TOP = 26, H = VH - TOP - 6;
   /* phones: kinds on the left edge with their names to the right, outcomes on the right edge with their words to the left */
-  const X = narrow ? [null, 2, VW - W] : [Math.round(VW * .13), 0, VW - Math.max(170, Math.round(VW * .2)) - W]; if (!narrow) X[1] = Math.round((X[0] + X[2]) / 2);
+  const X = narrow ? [null, 2, VW - W] : [Math.round(VW * .13), 0, VW - Math.max(170, Math.round(VW * .2)) - W]; if (!narrow) X[1] = X[0] + Math.round((X[2] - X[0]) * .65);
   const k = Math.min(...[[SRC, 26], [KIND, 12], [FIT, 26]].map(([n, gp]) => (H - gp * (n.length - 1)) / 2413));
   const col = (names, tot, gap) => { let y = TOP + (H - (2413 * k + gap * (names.length - 1))) / 2; return names.map(n => { const h = tot(n) * k, o = { y, h }; y += h + gap; return o }) };
   const nS = col(SRC, n => sum(SK1, 0, n), 26), nK = col(KIND, n => sum(SK1, 1, n), 12), nF = col(FIT, n => sum(SK2, 1, n), 26);
@@ -8897,15 +8905,17 @@ function sankey(VW, VH, narrow) {
   KIND.forEach((n, j) => { const o = nK[j], hk = n === HIK;
     node({ x: X[1], y: o.y, width: W, height: Math.max(2, o.h), rx: 2, fill: KG[j] }, hk);
     const lx = narrow ? X[1] + W + 8 : X[1] - 9, la = narrow ? 'start' : 'end';
-    const a = txt(lx, o.y + o.h / 2 - 1, LBL[n], 'sn', la), b = txt(lx, o.y + o.h / 2 + 13, sum(SK1, 1, n).toLocaleString(), 'sc', la);
+    /* wide: name and count on one line left of the bar, as the site's main Sankey and the article set them */
+    let a, b; if (narrow) { a = txt(lx, o.y + o.h / 2 - 1, LBL[n], 'sn', la); b = txt(lx, o.y + o.h / 2 + 13, sum(SK1, 1, n).toLocaleString(), 'sc', la) }
+    else { const cy = o.y + o.h / 2 + 4; b = txt(lx, cy, sum(SK1, 1, n).toLocaleString(), 'sc', la); a = txt(lx - (b.getComputedTextLength() || 24) - 6, cy, LBL[n], 'sn', la) }
     /* its share big and its count small, as the last column sets its numbers, just above its node and clear of its flows; the caption carries the meaning.
        Phones: beside its own name, since above it is the kind before's */
     if (hk) { SKD.hk.push(a, b);
       if (narrow) { const nx = lx + (a.getComputedTextLength() || LBL[n].length * 6.2) + 10; SKD.pct = txt(nx, o.y + o.h / 2 - 1, '8.5%', 'sbig hk', 'start'); SKD.hk2 = txt(nx + 1, o.y + o.h / 2 + 13, '204 asks', 'sc', 'start') }
-      else { SKD.pct = txt(X[1] + W + 10, o.y - 22, '8.5%', 'sbig hk', 'start'); SKD.hk2 = txt(X[1] + W + 11, o.y - 7, '204 asks', 'sc', 'start') }
+      else { const cy = o.y + o.h / 2; SKD.pct = txt(X[1] + W + 10, cy + 3, '8.5%', 'sbig hk', 'start'); SKD.hk2 = txt(X[1] + W + 11, cy + 18, '204 asks', 'sc', 'start') }
       SKD.dim.splice(-2) } });
   FIT.forEach((n, f) => { const o = nF[f], tot = sum(SK2, 1, n), cy = o.y + o.h / 2, x = narrow ? X[2] - 8 : X[2] + W + 10, fa = narrow ? 'end' : 'start';
-    node({ x: X[2], y: o.y, width: W, height: o.h, rx: 2, fill: FC[f] }, false); txt(x, cy - 4, Math.round(tot / 24.13) + '%', narrow ? 'sn' : 'sbig', fa); if (narrow && FL[f].length > 12) { const w2 = FL[f].split(' '), hh = Math.floor(w2.length / 2); txt(x, cy + 13, w2.slice(0, hh).join(' '), 'sn', fa); txt(x, cy + 27, w2.slice(hh).join(' '), 'sn', fa); txt(x, cy + 41, tot.toLocaleString(), 'sc', fa) } else { txt(x, cy + 13, FL[f], 'sn', fa); txt(x, cy + 27, tot.toLocaleString(), 'sc', fa) } });
+    node({ x: X[2], y: o.y, width: W, height: o.h, rx: 2, fill: FC[f] }, false); txt(x, cy - 4, Math.round(tot / 24.13) + '%', narrow ? 'sn' : 'sbig', fa); if (FL[f].length > (narrow ? 12 : 16)) { const w2 = FL[f].split(' '), hh = Math.floor(w2.length / 2); txt(x, cy + 13, w2.slice(0, hh).join(' '), 'sn', fa); txt(x, cy + 27, w2.slice(hh).join(' '), 'sn', fa); txt(x, cy + 41, tot.toLocaleString(), 'sc', fa) } else { txt(x, cy + 13, FL[f], 'sn', fa); txt(x, cy + 27, tot.toLocaleString(), 'sc', fa) } });
 }
 
 /* ---------------- state ---------------- */

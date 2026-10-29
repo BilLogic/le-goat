@@ -112,8 +112,7 @@ main section[data-proto="sankey"]>figure{width:min(1120px,calc(100% - 32px));max
 [hidden]{display:none!important}
 .sankey-wrap text{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
 .sankey-wrap text.sk-kind{stroke-width:7px}
-#sankey[data-narrow="false"] text.sk-kind{stroke:none}
-#sankey[data-narrow="true"] text.sk-kind{stroke-width:4px}
+#sankey text.sk-kind{stroke-width:4px}
 .sk{font-family:var(--slack);color:var(--sk-text);background:var(--surface);border:1px solid var(--sk-line);border-radius:12px;overflow:hidden;box-shadow:0 18px 40px -30px rgba(0,0,0,.35)}
 .sk-bar{display:flex;align-items:baseline;gap:8px;padding:11px 16px;border-bottom:1px solid var(--sk-line);font-size:13px;color:var(--sk-muted)}
 .sk-bar b{font-size:15px;font-weight:900;color:var(--sk-text)}
@@ -4014,9 +4013,9 @@ casesEl.innerHTML=CASES.map((c,i)=>`<div class="case" data-c="${i}" aria-label="
   <div class="col b"><div class="lbl b">Before</div>${winHTML(c,'b')}<div class="call b"><div class="k">Before</div><div class="cl">${c.pain}</div></div></div>
   <div class="col a"><div class="lbl a">After</div>${winHTML(c,'a')}<div class="call a"><div class="k">After</div><div class="cl">${c.act}<span class="val">${c.val}</span></div></div></div></div>`).join('');
 
-/* timing (ms from the start of a step): the Before plays, then the After, then both are marked and held.
-   hold was 5200 — long enough to read, but the beat after the marks felt stuck before the next manner. */
-const T={in:350,rx:200,wl:700,wait:1300,perWord:22,streamMin:1200,streamMax:2100,gap:900,row:340,stagger:110,settle:1100,mark2:300,hold:2800};
+/* timing (ms from the start of a step): the Before plays and holds, then the After plays and holds. No marks here (Bill):
+   the pair is the contrast, so the time the marks took goes to letting each side read. */
+const T={in:350,rx:200,wl:700,wait:1300,perWord:22,streamMin:1200,streamMax:2100,gap:1600,row:340,stagger:110,settle:1100,mark2:300,hold:3600};
 const K=CASES.map((c,i)=>{const el=$(`.case[data-c="${i}"]`,casesEl),[wb,wa]=$$('.win',el);
   const mk=w=>({el:w,feed:$('.feed',w),scroll:$('.scroll',w),wn:$('.wn',w),wc:$('.wc',w),eb:$('.eb',w),reply:$('.reply',w),bot:$('.bot',w),parts:$$('.part',w),y:-1,words:[],blocks:[],shown:-1,mk:null});
   const B=mk(wb),A=mk(wa);
@@ -4066,8 +4065,8 @@ function paint(k,t){const{B,A,t:s,live}=k;
       $('.st',live).innerHTML=folded?IC.check:IC.spin;$('.lt',live).textContent=folded?'Thinking completed':'Thinking'}
     $$('li',live).forEach((li,j)=>tog(li,'in',folded||t>=s.rows[j]))}
   tog(A.wc,'on',t>=s.parts);const an=String(A.count);if(A.wn.textContent!==an)A.wn.textContent=an;
-  // the comparison: both replies marked, each with its callout
-  const cB=t>=s.c0,cA=t>=s.c0+T.mark2;
+  // the comparison is the pair itself: nothing is marked
+  const cB=false,cA=false;
   markOn(B,k.c.bt(B.el),cB);markOn(A,k.c.at(A.el),cA);tog(k.callB,'on',cB);tog(k.callA,'on',cA);
   // the feeds follow the newest line, then bring the marked lines into view
   [[B,cB],[A,cA]].forEach(([o,c])=>{const fh=o.feed.clientHeight;
@@ -4997,11 +4996,11 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   if(narrow){outW=Math.round(Math.min(96,Math.max(78,VW*.24)));labelW=Math.round(Math.min(150,Math.max(108,VW*.46)))}
   const GL=VW<820?112:VW<1000?132:156,GR=GL;
   // phones: each kind's name sits right of its bar, over the ribbons, kept legible by the text's own outline
-  const nameW=narrow?Math.max(92,Math.min(160,Math.round(VW*.36))):0;
-  let TOP=narrow?92:34,H=narrow?540:630,VH=narrow?TOP+H+24:690,W=10,X=narrow?[0,4,VW-6-outW-W]:[GL,0,VW-GR-W];
-  // wide: each kind is a tile holding its name, left of its bar; stage 1 ends at the tile, stage 2 leaves the bar, and the
-  // two ribbon spans are equal so the columns sit evenly
-  const LANE=narrow?0:176,LANEN=0;if(!narrow)X[1]=X[0]+W+Math.round((X[2]-X[0]-2*W-LANE)/2)+LANE;
+  const nameW=narrow?Math.max(92,Math.min(190,Math.round(VW*.48))):0;
+  let TOP=narrow?92:34,H=narrow?540:630,VH=narrow?TOP+H+24:690,W=10,X=narrow?[0,4,VW-W]:[GL,0,VW-GR-W];
+  // wide: the kinds sit about two thirds of the way across, so stage 1 gets the long run; each name and its count read on
+  // one line left of its bar, over the ribbons, kept legible by the text's own outline
+  const LANE=0,LANEN=0;if(!narrow)X[1]=X[0]+Math.round((X[2]-X[0])*.65);
   s.setAttribute('viewBox',`0 0 ${VW} ${VH}`);s.style.width=VW+'px';s.dataset.w=VW;
   const FL=narrow?[["Didn't",'need me'],['Needed only','my sign-off'],['Needed me']]:[["Didn't need me"],['Needed only','my sign-off'],['Needed me']];// framed by what needed me: le goat isn't introduced yet
   // plainer names for the corpus categories; the data keeps its own keys
@@ -5033,21 +5032,22 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
     SRC.forEach((n,i)=>{const c=sum(SK1,0,n),w=c/2413*bw,a=i===2?'end':'start',lx=i===2?x+w:x;mk('rect',{x,y:24,width:Math.max(2,w),height:10,rx:2,fill:SG[i]},s);
       txt(lx,50,n,{'font-size':10,'text-anchor':a,'font-family':FF});
       txt(lx,64,c.toLocaleString(),{'font-size':11,'font-family':FM,fill:v('--ink-3'),'text-anchor':a});x+=w+gp});
-    R.heads=[null,hd(X[1],TOP-14,'Kind of ask','start'),hd(X[2]+W+6,TOP-14,'What it needed','start')]}
+    R.heads=[null,hd(X[1],TOP-14,'Kind of ask','start'),hd(VW,TOP-14,'What it needed','end')]}
   else{R.heads=[head(X[0]+W/2,'Where it arrived','middle'),head(X[1]+(W-LANE)/2,'Kind of ask','middle'),head(X[2]+W/2,'What it needed','middle')]}
   if(!narrow)SRC.forEach((n,i)=>{const o=nS[i];const r=mk('rect',{x:X[0],y:o.y,width:W,height:o.h,rx:2,fill:SG[i]},s);const a=txt(X[0]-12,o.y+o.h/2-2,n,{'text-anchor':'end'});const b=txt(X[0]-12,o.y+o.h/2+15,sum(SK1,0,n).toLocaleString(),{'text-anchor':'end','font-size':12,'font-family':'Geist Mono',fill:v('--ink-3')});R.nodes[0].push({r,t:[a,b],n:[b]})});
   const kindEls=KIND.map((n,j)=>{const o=nK[j];const g=mk('g',{style:'cursor:default','data-k':j},s);
     const tile=LANE||LANEN?mk('rect',{x:LANE?X[1]-LANE:X[1]+W,y:narrow?o.y+(o.h-o.slot)/2:o.y,width:LANE||LANEN,height:Math.max(2,narrow?o.slot:o.h),fill:KG[j],'fill-opacity':.32},g):null;const r=mk('rect',{x:X[1],y:o.y,width:W,height:Math.max(2,o.h),rx:2,fill:KG[j]},g);
     // name and count sit in the kind's tile: left of the bar on wide screens, right of it on phones; no ribbon runs under them
     const lx=narrow?X[1]+W+8:X[1]-10,ka=narrow?'start':'end',ay=narrow?o.y+o.h/2-((o.lines.length-1)*13)/2:o.y+o.h/2-2,by=narrow?ay+o.lines.length*13+1:o.y+o.h/2+15;
-    const a=txt(lx,ay,narrow?'':LBL[n],{'text-anchor':ka,'font-size':narrow?11:13,class:'sk-kind','font-family':FF});
+    const b=txt(lx,narrow?by:o.y+o.h/2+4.5,sum(SK1,1,n).toLocaleString(),{'text-anchor':ka,'font-size':narrow?10:13,'font-family':FM,fill:v('--ink-3'),class:'sk-kind'});
+    const a=txt(narrow?lx:lx-(b.getComputedTextLength()||26)-6,narrow?ay:o.y+o.h/2+4.5,narrow?'':LBL[n],{'text-anchor':ka,'font-size':narrow?11:13,class:'sk-kind','font-family':FF});
     if(narrow)o.lines.forEach((line,i)=>{const ts=mk('tspan',{x:lx,dy:i?13:0},a);ts.textContent=line});
-    a.parentNode===s&&g.appendChild(a);
-    const b=txt(lx,by,sum(SK1,1,n).toLocaleString(),{'text-anchor':ka,'font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3'),class:'sk-kind'});b.parentNode===s&&g.appendChild(b);R.nodes[1].push({r,t:tile?[tile,a,b]:[a,b],n:[b]});return g});
+    a.parentNode===s&&g.appendChild(a);b.parentNode===s&&g.appendChild(b);R.nodes[1].push({r,t:tile?[tile,a,b]:[a,b],n:[b]});return g});
   FIT.forEach((n,f)=>{const o=nF[f],tot=sum(SK2,1,n),hi=f===2;const r=mk('rect',{x:X[2],y:o.y,width:W,height:o.h,rx:2,fill:FC[f]},s);const cy=o.y+o.h/2;
-    const L=FL[f],fs=narrow?11:13,lh=narrow?16:17,big=narrow?16:28,x=X[2]+W+(narrow?6:14),y0=cy-(L.length-1)*lh/2-(narrow?12:8);
-    const pc=txt(x,y0,Math.round(tot/24.13)+'%',{'font-size':big,'font-weight':600,'letter-spacing':'-.04em','font-family':FF});
-    const ls=L.map((l,i)=>txt(x,y0+(narrow?18:21)+i*lh,l,{'font-size':fs,'font-weight':hi?600:400,'font-family':FF})),ct=txt(x,y0+(narrow?18:21)+L.length*lh,tot.toLocaleString(),{'font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3')});R.nodes[2].push({r,t:[pc,...ls,ct],n:[pc,ct]})});
+        // phones: the outcome bar takes the right edge and its words sit left of it, over the ribbons, so the flow gets the full width
+    const L=FL[f],fs=narrow?11:13,lh=narrow?16:17,big=narrow?16:28,x=narrow?X[2]-6:X[2]+W+14,ta=narrow?'end':'start',y0=cy-(L.length-1)*lh/2-(narrow?12:8);
+    const pc=txt(x,y0,Math.round(tot/24.13)+'%',{'font-size':big,'font-weight':600,'letter-spacing':'-.04em','font-family':FF,'text-anchor':ta});
+    const ls=L.map((l,i)=>txt(x,y0+(narrow?18:21)+i*lh,l,{'font-size':fs,'font-weight':hi?600:400,'font-family':FF,'text-anchor':ta})),ct=txt(x,y0+(narrow?18:21)+L.length*lh,tot.toLocaleString(),{'font-size':narrow?10:12,'font-family':FM,fill:v('--ink-3'),'text-anchor':ta});R.nodes[2].push({r,t:[pc,...ls,ct],n:[pc,ct]})});
   // point at a kind of ask to follow it through both stages
   const reset=()=>flows.forEach(p=>p.setAttribute('fill-opacity',p.dataset.op));
   const focus=j=>flows.forEach(p=>p.setAttribute('fill-opacity',+p.dataset.k===j?Math.min(.95,+p.dataset.op+.3):.08));
@@ -7826,9 +7826,10 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     // Gemini's sparkles over the first half (exits faster), scaling toward them as it fades, and the sparkles carry on alone
     const SP=(CFG.exit==='caret'||CFG.exit==='dots')&&!!r.fly;
     // wide screens: from halfway through the stream the window heads for the middle and grows with the words, landing on the
-    // whole reply as the last word arrives; the stack steps back on that same move
-    const phone=SKN(),desk=!phone&&CFG.zoom?CFG.ez.carry(sg(sw,.5,1)):0;
-    const fd=Math.max(eo(U(q,'exit',0,SP?.5:.7)),desk);r.ST.style.opacity=f(1-fd);
+    // whole reply as the last word arrives; the stack steps back on that same move. Phones: the stack dissolves from halfway
+    // through the stream, before the growing window can reach it
+    const phone=SKN(),desk=!phone&&CFG.zoom?CFG.ez.carry(sg(sw,.5,1)):0,pfd=phone?eo(sg(sw,.4,.6)):0;
+    const fd=Math.max(eo(U(q,'exit',0,SP?.5:.7)),desk,pfd);r.ST.style.opacity=f(1-fd);
     if(SP){r.ST.style.transformOrigin=`${r.spk.cx}px ${f(r.spk.cy)}px`;r.ST.style.transform=fd>0?`scale(${f(1-.45*fd)})`:''}
     else{r.ST.style.transformOrigin='';r.ST.style.transform=CFG.exit==='dot'?`translateX(${f(-24*fd)}px)`:''}
     r.gem.forEach(d=>{if(fd>0)d.style.opacity=f(+d.style.opacity*(1-fd))});
@@ -7839,10 +7840,10 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     if(r.say){const txt=q<arr('session')+.01||q>=at('write',.18)?'':say||(q>=TB.write?'is writing…':'is thinking…');
       if(r.say._t!==txt){r.say._t=txt;if(txt)r.say.lastChild.textContent=' '+txt}r.say.style.opacity=txt&&CFG.status?1:0}
     // ZOOM: on a wide screen the window is carried to the middle and grown to the whole reply together, during the exit.
-    // On a phone the card centers and grows to fill the stage as the words arrive; then, over close and exit, it grows on
-    // to the whole reply and the camera (which frames the window) pulls back with it, so the hold shows all 639 words at
-    // once: the point is the wall of text, not reading it.
-    let cr,H,z,hv,L=null,T=null;
+    // On a phone the card is full height from the start; from halfway through the stream it grows with the words (never
+    // past them) and the camera, which frames the window, pulls back with it, so the last word lands on all 639 at once:
+    // the point is the wall of text, not reading it.
+    let cr,H,z,hv,L=null,T=null,wv=CW.w;
     if(!phone&&CFG.zoom&&r.world){const Z=zoomTo(r),cL=Z.cx-CW.w/2,side=eio(U(q,'stack',0,.45));
       // the layout follows what has streamed in, so the growing window never shows empty feed above the words
       const need=W.bar.offsetHeight+W.scroll.offsetHeight+W.comp.offsetHeight+2;
@@ -7852,12 +7853,13 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     else if(phone){const stageEl=sec.querySelector('.cw-stage'),sW=stageEl?stageEl.clientWidth:360,sH=stageEl?stageEl.clientHeight:520;
       const scale=Math.max(.2,(sW-28)/CW.w),cap=Math.max(320,Math.min(CW.h,sH/scale-28));
       const need=W.scroll.offsetHeight+(W.bar?W.bar.offsetHeight:0)+(W.comp?W.comp.offsetHeight:0)+8;
-      cr=eio(Math.min(1,sw/.85));const Hs=Math.min(cap,Math.max(lerp(cap*.62,cap,cr),Math.min(cap,need))),pz=CFG.ez.carry(sg(q,TB.close,TB.end));
-      H=lerp(Hs,Math.max(Hs,r.full),pz);z=1;hv=H;
-      r.ST.style.opacity=f(1-cr)}
+      cr=eio(Math.min(1,sw/.85));const g=CFG.ez.carry(sg(sw,.5,1));
+      // and widens as it pulls back (mostly once the words are too small to read), so the whole reply lands larger
+      wv=lerp(CW.w,Math.max(CW.w,600),eio(sg(g,.2,1)));
+      H=clamp(lerp(cap,r.full,g),cap,Math.max(cap,need));z=1;hv=H;L=lerp(CW.x,(WW-wv)/2,cr)}
     else{const dz=CFG.zoom?CFG.ez.carry(sg(q,TB.exit,TB.end)):0;cr=CFG.zoom?dz:CFG.ez.carry(sg(q,TB.exit,TB.zoom));H=lerp(CW.h,r.full,dz);
       const fit=CW.fit;z=Math.min(1,fit/H);hv=H*z}
-    const cyT=WH/2;W._z=z;W._hv=hv;
+    const cyT=WH/2;W._z=z;W._hv=hv;W._w=wv;W.el.style.width=f(wv)+'px';
     W.el.classList.toggle('cw-follow',q>=at('write',.18)&&(phone?sw<.998:q<(CFG.zoom?TB.exit:TB.zoom)));
     Object.assign(W.el.style,{opacity:f(e),height:f(H)+'px',left:f(L??lerp(CW.x,(WW-CW.w*z)/2,cr))+'px',top:f(T??lerp(CW.y,cyT-hv/2,cr))+'px',
       transform:`translateX(${f((1-e)*56)}px) scale(${f(z*1e4)/1e4})`});
@@ -7882,7 +7884,7 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
   const cam=(r,q)=>{const pan=a=>eio(sg(q,a,a+.025)),w=clamp(1-pan(TB.worker)+pan(TB.write),0,1);
     const W=r.win,z=W&&W._z||1,hv=W&&W._hv||CW.h;
     const L=W&&W.el.style.left?parseFloat(W.el.style.left):CW.x,T=W&&W.el.style.top?parseFloat(W.el.style.top):CW.y;
-    const ww=CW.w*z,pad=22;
+    const ww=(W&&W._w||CW.w)*z,pad=12;
     return{x:lerp(202,L+ww/2,w),y:lerp(WH/2,T+hv/2,w),w:lerp(420,ww+pad*2,w),h:lerp(600,hv+pad*2,w)}};
   /* r19 runway (screens per beat, desktop; phones x1.3): the old step model spent 8 zones x .6 = 4.8 screens on these. [segment, screens, tag]; null = hold */
   const RUNWAY=[['hold',.5],['hl',.6],[null,.5,'hl53'],['dissolve',.7],['gather',.5],['handoff',.4],['ask',.9],['stack',1],['worker',1],['session',1],['model',1],['tools',1],['write',1.6],['close',.25],['exit',.25],[null,.6,'reply639']];
@@ -8877,7 +8879,8 @@ function sankey(VW, VH, narrow) {
   const SG = tone(SRC.map(n => sum(SK1, 0, n)), 30, 88).map(pc => mix(v('--ink-2'), pc)), KG = tone(KIND.map(n => sum(SK1, 1, n)), 26, 84).map(pc => mix(v('--ink-2'), pc));
   const FC = tone(FIT.map(n => sum(SK2, 1, n)), 30, 100).map(pc => mix('#1683b0', pc));
   const W = 10, TOP = 26, H = VH - TOP - 6;
-  const X = narrow ? [null, Math.round(VW * .46), VW - 96] : [Math.round(VW * .13), 0, VW - Math.max(170, Math.round(VW * .2)) - W]; if (!narrow) X[1] = Math.round((X[0] + X[2]) / 2);
+  /* phones: kinds on the left edge with their names to the right, outcomes on the right edge with their words to the left */
+  const X = narrow ? [null, 2, VW - W] : [Math.round(VW * .13), 0, VW - Math.max(170, Math.round(VW * .2)) - W]; if (!narrow) X[1] = Math.round((X[0] + X[2]) / 2);
   const k = Math.min(...[[SRC, 26], [KIND, 12], [FIT, 26]].map(([n, gp]) => (H - gp * (n.length - 1)) / 2413));
   const col = (names, tot, gap) => { let y = TOP + (H - (2413 * k + gap * (names.length - 1))) / 2; return names.map(n => { const h = tot(n) * k, o = { y, h }; y += h + gap; return o }) };
   const nS = col(SRC, n => sum(SK1, 0, n), 26), nK = col(KIND, n => sum(SK1, 1, n), 12), nF = col(FIT, n => sum(SK2, 1, n), 26);
@@ -8887,15 +8890,20 @@ function sankey(VW, VH, narrow) {
   if (!narrow) { const oS = nS.map(n => n.y), iK = nK.map(n => n.y); SRC.forEach((sn, i) => KIND.forEach((kn, j) => { const q = SK1.find(q => q[0] === sn && q[1] === kn); if (!q) return; const h = q[2] * k; band(X[0] + W, oS[i], X[1], iK[j], h, SG[i], .42, kn === HIK); oS[i] += h; iK[j] += h })) }
   { const oK = nK.map(n => n.y), iF = nF.map(n => n.y); KIND.forEach((kn, j) => FIT.forEach((fn, f) => { const q = SK2.find(q => q[0] === kn && q[1] === fn); if (!q) return; const h = q[2] * k; band(X[1] + W, oK[j], X[2], iF[f], h, FC[f], .55, kn === HIK); oK[j] += h; iF[f] += h })) }
   if (!narrow) txt(X[0] + W / 2, 10, 'Where it arrived', 'sh', 'middle');
-  txt(narrow ? X[1] + W : X[1] + W / 2, 10, 'Kind of ask', 'sh', narrow ? 'end' : 'middle'); txt(narrow ? VW - 2 : X[2] + W / 2, 10, 'What it needed', 'sh', narrow ? 'end' : 'middle');
+  txt(narrow ? X[1] : X[1] + W / 2, 10, 'Kind of ask', 'sh', narrow ? 'start' : 'middle'); txt(narrow ? VW - 2 : X[2] + W / 2, 10, 'What it needed', 'sh', narrow ? 'end' : 'middle');
   if (!narrow) SRC.forEach((n, i) => { const o = nS[i]; node({ x: X[0], y: o.y, width: W, height: o.h, rx: 2, fill: SG[i] }, false); txt(X[0] - 10, o.y + o.h / 2 - 1, n, 'sn', 'end'); txt(X[0] - 10, o.y + o.h / 2 + 14, sum(SK1, 0, n).toLocaleString(), 'sc', 'end') });
   KIND.forEach((n, j) => { const o = nK[j], hk = n === HIK;
     node({ x: X[1], y: o.y, width: W, height: Math.max(2, o.h), rx: 2, fill: KG[j] }, hk);
-    const a = txt(X[1] - 9, o.y + o.h / 2 - 1, LBL[n], 'sn', 'end'), b = txt(X[1] - 9, o.y + o.h / 2 + 13, sum(SK1, 1, n).toLocaleString(), 'sc', 'end');
-    /* its share big and its count small, as the last column sets its numbers, just above its node and clear of its flows; the caption carries the meaning */
-    if (hk) { SKD.hk.push(a, b); SKD.pct = txt(X[1] + W + 10, o.y - 22, '8.5%', 'sbig hk', 'start'); SKD.hk2 = txt(X[1] + W + 11, o.y - 7, '204 asks', 'sc', 'start'); SKD.dim.splice(-2) } });
-  FIT.forEach((n, f) => { const o = nF[f], tot = sum(SK2, 1, n), cy = o.y + o.h / 2, x = X[2] + W + 10;
-    node({ x: X[2], y: o.y, width: W, height: o.h, rx: 2, fill: FC[f] }, false); txt(x, cy - 4, Math.round(tot / 24.13) + '%', narrow ? 'sn' : 'sbig'); if (narrow && FL[f].length > 12) { const w2 = FL[f].split(' '), hh = Math.ceil(w2.length / 2); txt(x, cy + 13, w2.slice(0, hh).join(' '), 'sn'); txt(x, cy + 27, w2.slice(hh).join(' '), 'sn'); txt(x, cy + 41, tot.toLocaleString(), 'sc') } else { txt(x, cy + 13, FL[f], 'sn'); txt(x, cy + 27, tot.toLocaleString(), 'sc') } });
+    const lx = narrow ? X[1] + W + 8 : X[1] - 9, la = narrow ? 'start' : 'end';
+    const a = txt(lx, o.y + o.h / 2 - 1, LBL[n], 'sn', la), b = txt(lx, o.y + o.h / 2 + 13, sum(SK1, 1, n).toLocaleString(), 'sc', la);
+    /* its share big and its count small, as the last column sets its numbers, just above its node and clear of its flows; the caption carries the meaning.
+       Phones: beside its own name, since above it is the kind before's */
+    if (hk) { SKD.hk.push(a, b);
+      if (narrow) { const nx = lx + (a.getComputedTextLength() || LBL[n].length * 6.2) + 10; SKD.pct = txt(nx, o.y + o.h / 2 - 1, '8.5%', 'sbig hk', 'start'); SKD.hk2 = txt(nx + 1, o.y + o.h / 2 + 13, '204 asks', 'sc', 'start') }
+      else { SKD.pct = txt(X[1] + W + 10, o.y - 22, '8.5%', 'sbig hk', 'start'); SKD.hk2 = txt(X[1] + W + 11, o.y - 7, '204 asks', 'sc', 'start') }
+      SKD.dim.splice(-2) } });
+  FIT.forEach((n, f) => { const o = nF[f], tot = sum(SK2, 1, n), cy = o.y + o.h / 2, x = narrow ? X[2] - 8 : X[2] + W + 10, fa = narrow ? 'end' : 'start';
+    node({ x: X[2], y: o.y, width: W, height: o.h, rx: 2, fill: FC[f] }, false); txt(x, cy - 4, Math.round(tot / 24.13) + '%', narrow ? 'sn' : 'sbig', fa); if (narrow && FL[f].length > 12) { const w2 = FL[f].split(' '), hh = Math.floor(w2.length / 2); txt(x, cy + 13, w2.slice(0, hh).join(' '), 'sn', fa); txt(x, cy + 27, w2.slice(hh).join(' '), 'sn', fa); txt(x, cy + 41, tot.toLocaleString(), 'sc', fa) } else { txt(x, cy + 13, FL[f], 'sn', fa); txt(x, cy + 27, tot.toLocaleString(), 'sc', fa) } });
 }
 
 /* ---------------- state ---------------- */

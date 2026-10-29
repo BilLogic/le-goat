@@ -112,7 +112,8 @@ main section[data-proto="sankey"]>figure{width:min(1120px,calc(100% - 32px));max
 [hidden]{display:none!important}
 .sankey-wrap text{paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
 .sankey-wrap text.sk-kind{stroke-width:7px}
-#sankey text.sk-kind{stroke:none}
+#sankey[data-narrow="false"] text.sk-kind{stroke:none}
+#sankey[data-narrow="true"] text.sk-kind{stroke-width:4px}
 .sk{font-family:var(--slack);color:var(--sk-text);background:var(--surface);border:1px solid var(--sk-line);border-radius:12px;overflow:hidden;box-shadow:0 18px 40px -30px rgba(0,0,0,.35)}
 .sk-bar{display:flex;align-items:baseline;gap:8px;padding:11px 16px;border-bottom:1px solid var(--sk-line);font-size:13px;color:var(--sk-muted)}
 .sk-bar b{font-size:15px;font-weight:900;color:var(--sk-text)}
@@ -4995,12 +4996,12 @@ function sankey(){const s=$('#sankey');s.innerHTML='';const cs=getComputedStyle(
   let labelW=0,outW=0;
   if(narrow){outW=Math.round(Math.min(96,Math.max(78,VW*.24)));labelW=Math.round(Math.min(150,Math.max(108,VW*.46)))}
   const GL=VW<820?112:VW<1000?132:156,GR=GL;
-  // phones: each kind's name sits in a tile right of its bar, and the ribbons leave from the tile's far edge
+  // phones: each kind's name sits right of its bar, over the ribbons, kept legible by the text's own outline
   const nameW=narrow?Math.max(92,Math.min(160,Math.round(VW*.36))):0;
   let TOP=narrow?92:34,H=narrow?540:630,VH=narrow?TOP+H+24:690,W=10,X=narrow?[0,4,VW-6-outW-W]:[GL,0,VW-GR-W];
   // wide: each kind is a tile holding its name, left of its bar; stage 1 ends at the tile, stage 2 leaves the bar, and the
   // two ribbon spans are equal so the columns sit evenly
-  const LANE=narrow?0:176,LANEN=narrow?nameW+16:0;if(!narrow)X[1]=X[0]+W+Math.round((X[2]-X[0]-2*W-LANE)/2)+LANE;
+  const LANE=narrow?0:176,LANEN=0;if(!narrow)X[1]=X[0]+W+Math.round((X[2]-X[0]-2*W-LANE)/2)+LANE;
   s.setAttribute('viewBox',`0 0 ${VW} ${VH}`);s.style.width=VW+'px';s.dataset.w=VW;
   const FL=narrow?[["Didn't",'need me'],['Needed only','my sign-off'],['Needed me']]:[["Didn't need me"],['Needed only','my sign-off'],['Needed me']];// framed by what needed me: le goat isn't introduced yet
   // plainer names for the corpus categories; the data keeps its own keys
@@ -7629,7 +7630,17 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     const wr=W.el.getBoundingClientRect(),k=wr.width/W.el.offsetWidth||1,ar=W.ask.querySelector('.cw-body').getBoundingClientRect(),fr=W.feed.getBoundingClientRect();
     const yIn=Math.round(CW.y+(ar.top+ar.height/2-wr.top)/k),yOut=Math.round(CW.y+(fr.bottom-wr.top)/k-22);
     r.wIn.forEach(p=>p.setAttribute('d',wIn(yIn)));r.wOut.forEach(p=>p.setAttribute('d',wOut(yOut)));r.lIn=r.pIn.getTotalLength();r.lOut=r.pOut.getTotalLength();
-    r.full=fullH(W);W.el.style.height=h;r.placed=1}
+    r.full=fullH(W);W.el.style.height=h;r.placed=1;r.yIn=r.yOut=null}
+  /**
+   * Phones: the window is shorter than the one place() measured, and its feed sits on the composer, so the posted ask and
+   * the feed's last line sit higher than measured. Re-aim both wires at where they are now (the window is unscaled here).
+   * @param {object} r the stage refs
+   */
+  function rewire(r){const W=r.win,ar=W.ask.querySelector('.cw-body').getBoundingClientRect();if(ar.height<1)return;
+    const wr=W.el.getBoundingClientRect(),k=wr.width/W.el.offsetWidth||1,T=parseFloat(W.el.style.top)||CW.y,fr=W.feed.getBoundingClientRect();
+    const yIn=Math.round(T+(ar.top+ar.height/2-wr.top)/k),yOut=Math.round(T+Math.min(fr.bottom-wr.top,W.comp.getBoundingClientRect().top-wr.top)/k-22);
+    if(yIn!==r.yIn){r.yIn=yIn;r.wIn.forEach(p=>p.setAttribute('d',wIn(yIn)));r.lIn=r.pIn.getTotalLength()}
+    if(yOut!==r.yOut){r.yOut=yOut;r.wOut.forEach(p=>p.setAttribute('d',wOut(yOut)));r.lOut=r.pOut.getTotalLength()}}
   /**
    * Where the whole reply lands on a wide screen, in world units: centred in the pin, from 40px under the title block (or
    * under Iteration I's title, whichever is lower) to 16px above the screen's bottom edge. Iteration I opens on that same
@@ -7828,9 +7839,9 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     if(r.say){const txt=q<arr('session')+.01||q>=at('write',.18)?'':say||(q>=TB.write?'is writing…':'is thinking…');
       if(r.say._t!==txt){r.say._t=txt;if(txt)r.say.lastChild.textContent=' '+txt}r.say.style.opacity=txt&&CFG.status?1:0}
     // ZOOM: on a wide screen the window is carried to the middle and grown to the whole reply together, during the exit.
-    // On a phone the stream is that move. The card centers and grows to fill the stage as the words arrive, and it is
-    // finished when they are. The whole reply stays at reading size inside the card; fitting all 639 words into the
-    // phone frame at once shrinks them past reading, so the short scroll after this beat moves on to the next section.
+    // On a phone the card centers and grows to fill the stage as the words arrive; then, over close and exit, it grows on
+    // to the whole reply and the camera (which frames the window) pulls back with it, so the hold shows all 639 words at
+    // once: the point is the wall of text, not reading it.
     let cr,H,z,hv,L=null,T=null;
     if(!phone&&CFG.zoom&&r.world){const Z=zoomTo(r),cL=Z.cx-CW.w/2,side=eio(U(q,'stack',0,.45));
       // the layout follows what has streamed in, so the growing window never shows empty feed above the words
@@ -7841,7 +7852,8 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     else if(phone){const stageEl=sec.querySelector('.cw-stage'),sW=stageEl?stageEl.clientWidth:360,sH=stageEl?stageEl.clientHeight:520;
       const scale=Math.max(.2,(sW-28)/CW.w),cap=Math.max(320,Math.min(CW.h,sH/scale-28));
       const need=W.scroll.offsetHeight+(W.bar?W.bar.offsetHeight:0)+(W.comp?W.comp.offsetHeight:0)+8;
-      cr=eio(Math.min(1,sw/.85));H=Math.min(cap,Math.max(lerp(cap*.62,cap,cr),Math.min(cap,need)));z=1;hv=H;
+      cr=eio(Math.min(1,sw/.85));const Hs=Math.min(cap,Math.max(lerp(cap*.62,cap,cr),Math.min(cap,need))),pz=CFG.ez.carry(sg(q,TB.close,TB.end));
+      H=lerp(Hs,Math.max(Hs,r.full),pz);z=1;hv=H;
       r.ST.style.opacity=f(1-cr)}
     else{const dz=CFG.zoom?CFG.ez.carry(sg(q,TB.exit,TB.end)):0;cr=CFG.zoom?dz:CFG.ez.carry(sg(q,TB.exit,TB.zoom));H=lerp(CW.h,r.full,dz);
       const fit=CW.fit;z=Math.min(1,fit/H);hv=H*z}
@@ -7850,6 +7862,7 @@ const TIMING={beats:{gather:0,handoff:.10,ask:.17,stack:.24,worker:.32,session:.
     Object.assign(W.el.style,{opacity:f(e),height:f(H)+'px',left:f(L??lerp(CW.x,(WW-CW.w*z)/2,cr))+'px',top:f(T??lerp(CW.y,cyT-hv/2,cr))+'px',
       transform:`translateX(${f((1-e)*56)}px) scale(${f(z*1e4)/1e4})`});
     follow(W);
+    if(phone)rewire(r);
     flight(r,q,SP,z);
     {const cp=sec.querySelector('.cw-caps');if(cp){if(q<TB.exit||document.documentElement.classList.contains('jn-ds'))cp.style.opacity='';else{const cb=cp.getBoundingClientRect().bottom,wt=W.el.getBoundingClientRect().top;cp.style.opacity=f(sg(wt,cb+16,cb+96))}}}
     sec.dataset.cwPhase=q<TB.worker?'ask':q<at('write',.18)?'stack':q<TB.zoom?'stream':'whole'}

@@ -1762,7 +1762,7 @@ casesEl.innerHTML=CASES.map((c,i)=>`<div class="case" data-c="${i}" aria-label="
   <div class="col a"><div class="lbl a">After · with manners</div>${winHTML(c,'a')}</div></div>`).join('');
 
 /* timing (ms from the start of a step): the Before plays, then the After, then both are marked and held */
-const T={in:350,rx:200,wl:700,wait:1300,perWord:22,streamMin:1200,streamMax:2100,gap:900,row:340,stagger:110,settle:1100,mark2:300,hold:5200};
+const T={in:350,rx:200,wl:700,wait:1300,perWord:22,streamMin:1200,streamMax:2100,gap:900,row:340,stagger:110,settle:1100,mark2:300,markB:2200,hold:3600};
 const K=CASES.map((c,i)=>{const el=$(`.case[data-c="${i}"]`,casesEl),[wb,wa]=$$('.win',el);
   const mk=w=>({el:w,feed:$('.feed',w),scroll:$('.scroll',w),wn:$('.wn',w),wc:$('.wc',w),eb:$('.eb',w),reply:$('.reply',w),bot:$('.bot',w),parts:$$('.part',w),y:-1,words:[],blocks:[],shown:-1,mk:null});
   const B=mk(wb),A=mk(wa);
@@ -1775,10 +1775,12 @@ const K=CASES.map((c,i)=>{const el=$(`.case[data-c="${i}"]`,casesEl),[wb,wa]=$$(
   // this case's clock
   const t={};const x=T.in;
   t.rx=c.wait?x+T.rx:-1;t.wl=c.wait?x+T.wl:-1;t.bot=x+T.rx+(c.wait?T.wait:0);
-  t.stream=clamp(B.words.length*T.perWord,T.streamMin,T.streamMax);t.a0=t.bot+t.stream+T.gap;
+  t.stream=clamp(B.words.length*T.perWord,T.streamMin,T.streamMax);
+  /* strictly in turn: the Before plays, then its marks (if it has any) hold; they clear as the After plays, then the After's marks */
+  const hasB=c.bt(wb).some(e=>e),hasA=c.at(wa).some(e=>e);t.mB=hasB?t.bot+t.stream+T.mark2:-1;t.a0=t.bot+t.stream+(hasB?T.mark2+T.markB:T.gap);
   if(live){t.rows=$$('li',live).map((_,k)=>t.a0+250+T.row*k);t.fold=t.a0+250+T.row*t.rows.length+300;t.parts=t.fold+250}
   else t.parts=t.a0+150;
-  t.aEnd=t.parts+T.stagger*A.parts.length+500;t.c0=t.aEnd+T.settle;t.end=t.c0+T.mark2+T.hold;
+  t.aEnd=t.parts+T.stagger*A.parts.length+500;t.c0=hasA?t.aEnd+T.mark2:-1;t.end=t.aEnd+T.mark2+T.hold;
   const k={c,el,B,A,live,t,lf:null,callB:$('.call.b',el),callA:$('.call.a',el)};
   $$('.live-h',el).forEach(h=>h.addEventListener('click',()=>{const L=h.closest('.live');if(!L.classList.contains('folded'))return;const o=L.classList.toggle('open');h.setAttribute('aria-expanded',o);const tk=$('.tkr',L);tk.style.height=o?tk.firstElementChild.scrollHeight+'px':'0px'}));
   $$('.srcs',el).forEach(b=>b.addEventListener('click',()=>{const o=b.parentElement.classList.toggle('open');b.setAttribute('aria-expanded',o)}));
@@ -1812,8 +1814,8 @@ function paint(k,t){const{B,A,t:s,live}=k;
       $('.st',live).innerHTML=folded?IC.check:IC.spin;$('.lt',live).textContent=folded?'Thinking completed':'Thinking'}
     $$('li',live).forEach((li,j)=>tog(li,'in',folded||t>=s.rows[j]))}
   tog(A.wc,'on',t>=s.parts);const an=String(A.count);if(A.wn.textContent!==an)A.wn.textContent=an;
-  // the comparison: both replies marked, each with its callout
-  const cB=t>=s.c0,cA=t>=s.c0+T.mark2;
+  // one side marked at a time: the Before's marks while it holds, the After's once it has played
+  const cB=s.mB>=0&&t>=s.mB&&t<s.a0,cA=s.c0>=0&&t>=s.c0;
   markOn(B,k.c.bt(B.el),cB);markOn(A,k.c.at(A.el),cA);tog(k.callB,'on',cB);tog(k.callA,'on',cA);
   // the feeds follow the newest line, then bring the marked lines into view
   [[B,cB],[A,cA]].forEach(([o,c])=>{const fh=o.feed.clientHeight;

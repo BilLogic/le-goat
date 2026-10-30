@@ -1,1 +1,23 @@
 .DS_Store
+
+# Netlify CLI state: a machine path and the linked site id
+.netlify/
+
+# Editor and agent debug output
+.cursor/
+*.log
+
+# Kept local, not part of the public piece
+reply-play.html
+sankey-play.html
+pipeline/qa/
+drafts/
+
+# Masters, raw recordings and screencast frames: re-recordable, too large to publish
+source/
+*-lite.gif
+
+# Pipeline tooling
+pipeline/node_modules/
+pipeline/.venv/
+__pycache__/

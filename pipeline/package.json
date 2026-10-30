@@ -1,0 +1,9 @@
+{
+  "name": "le-goat-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "Records the le goat site and article and renders each platform's assets.",
+  "devDependencies": {
+    "playwright": "^1.58.2"
+  }
+}

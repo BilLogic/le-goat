@@ -26,6 +26,12 @@ python3 -m http.server 8765
 
 Published with Netlify. There is no build step.
 
+### Microsoft Clarity
+
+Both pages carry a small inline loader for the Clarity project `z91wpluc22`, right after the `<title>`. It runs only on `le-goat.netlify.app`, so local copies and deploy previews never load it, and never in a browser a script drives (`navigator.webdriver`). It waits for the page to load, then the first scroll, tap or key (or 3 s), then an idle moment.
+
+To keep your own visits out of the recordings, open https://le-goat.netlify.app/?clarity=off once in each browser you use. That marks the browser in localStorage and Clarity never loads there again; `?clarity=on` undoes it. The page drops the parameter from the address as it reads it, so a copied link never carries it.
+
 ## Re-rendering the platform files
 
 The social previews come from the site's landing section, and the Medium and Substack GIFs come from the article's figures. Setup, platform limits and the steps for each are in [pipeline/README.md](pipeline/README.md). In short, with the repo served on port 8771:

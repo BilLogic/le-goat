@@ -29,16 +29,16 @@ Every motion figure is one GIF: a carousel loops through all its scenes, the way
 
 | # | Figure | File | GIF |
 |---|---|---|---|
-| 01 | Hero wall (8.8 s loop) | `01-hero-wall.gif` | 5.2 MB |
+| 01 | Hero wall (8.8 s loop) | `01-hero-wall.gif` | 3.5 MB |
 | 02 | Heatmap | `02-heatmap.png` | |
 | 03 | Repeats | `03-repeats.png` | |
 | 04 | Wait by hour | `04-wait-by-hour.png` | |
 | 05 | Sankey | `05-sankey.png` | |
-| 06 | Wired (26.1 s loop) | `06-wired.gif` | 4.8 MB |
+| 06 | Wired (26.1 s loop) | `06-wired.gif` | 4.7 MB · 1000 w, 192 colors |
 | 07 | Four manners (44.7 s loop) | `07-manners.gif` | 4.4 MB |
 | 08 | MVP, five asks (82 s loop) | `08-mvp.gif` | 4.7 MB · stills held |
 | 09 | Pilot | `09-pilot.png` | |
-| 10 | Figma comment (ask → answer, 4–18 s) | `10-figma-comment.gif` | 5.2 MB |
+| 10 | Figma comment (ask → answer, 4–18 s) | `10-figma-comment.gif` | 4.4 MB |
 | 11 | Checked answers | `11-checked-answers.png` | |
 | 12 | Source trace | `12-source-trace.png` | |
 | 13 | Proactive (29.9 s loop) | `13-proactive.gif` | 4.4 MB |

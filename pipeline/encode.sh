@@ -2,8 +2,7 @@
 # Encodes a recorded figure into a master MP4 and the GIFs for Medium and Substack. Paths are from the repo root.
 # Usage: pipeline/encode.sh <name> [start_s] [end_s] [suffix]
 #   master:   source/figures/<name>.mp4       (cropped, constant 30 fps, near-lossless; local only)
-#   gif:      assets/substack/<name><suffix>.gif and assets/medium/<name><suffix>.gif   (fit.sh: under 5.4 MB and 290 frames, Substack's limits;
-#             a split figure gets its own Medium encode)
+#   gif:      assets/article/<name><suffix>.gif, the one file Medium and Substack both use (fit.sh: under 5.4 MB and 290 frames, Substack's limits)
 # Figure 10's master is the site's own recording, media/figma-demo.mp4.
 set -euo pipefail
 cd "$(dirname "$0")/.."

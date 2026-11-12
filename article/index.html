@@ -1005,7 +1005,7 @@ const TIMING={beats:{gather:0,handoff:.10,stack:.17,ask:.25,worker:.32,session:.
   const B=n=>{const i=ORDER.indexOf(n),a=TIMING.beats[n],b=i<ORDER.length-1?TIMING.beats[ORDER[i+1]]:1;return [a,Math.max(a+1e-4,b)]};
   const at=(n,u)=>{const [a,b]=B(n);return a+(b-a)*u},U=(q,n,u0=0,u1=1)=>sg(q,at(n,u0),at(n,u1));
   const TB=TIMING.beats;
-  const CAPS=()=>[[-1,TB.handoff,'One question that didn’t need me'],[TB.handoff,TB.worker,'A server on Cloudflare picks it up'],
+  const CAPS=()=>[[-1,TB.handoff,'One of my own questions'],[TB.handoff,TB.worker,'A server on Cloudflare picks it up'],
     [TB.worker,TB.model,'A session keeps the thread'],[TB.model,TB.write,'Gemini reads Notion, GitHub and the web'],[TB.write,TB.close,'The answer streams back'],[TB.close,2,'It worked, but the reply ran 639 words.']];
   // what the channel shows while each part works (Slack's status line under the composer)
   const TOOLSAY=['is searching Notion…','is searching GitHub…','is searching the web…'];
@@ -1391,7 +1391,7 @@ const TIMING={beats:{gather:0,handoff:.10,stack:.17,ask:.25,worker:.32,session:.
 
   // Story: the title area is one overlay whose text changes in place: the Sankey's line, then the section's title, then the beats
   const SKLINE=()=>{const p=document.querySelector('section[data-proto="sankey"] .prose p');return p?p.textContent.trim():"What didn't need me"};
-  const capsFor=story=>story?[[-1,-.012,SKLINE()],[-.012,TB.handoff,'One question that didn’t need me'],...CAPS().slice(1)]:CAPS();
+  const capsFor=story=>story?[[-1,-.012,SKLINE()],[-.012,TB.handoff,'One of my own questions'],...CAPS().slice(1)]:CAPS();
   /* phones: where the camera looks. The window from the start (phones open at the handoff) through the typed ask, and again while the reply
      comes back (it follows the window as it is carried to the middle); the stack while the ask runs down it */
   const cam=(r,q)=>{const pan=a=>eio(sg(q,a,a+.025)),w=clamp(1-pan(TB.worker)+pan(TB.write),0,1);
@@ -1401,7 +1401,7 @@ const TIMING={beats:{gather:0,handoff:.10,stack:.17,ask:.25,worker:.32,session:.
     return{x:lerp(318,wc,w),y:WH/2,w:lerp(300,CW.w*z+24,w),h:lerp(600,Math.max(CW.h,hv)+28,w)}};
   drive(sec,{WW,WH,CWW:CW.w,build,render,caps:capsFor,remeasure:r=>{r.placed=0},cam,q0:TB.stack,/* phones open with the window in and the composer ready */
     phone:{layers:LAYERS,cap1:'A server, a session, then Gemini',cap2:'The reply streamed back. It ran 639 words.'},
-    frames:[{q:.005,crop:[520,-10,560,664],cap:'One question that didn’t need me'},
+    frames:[{q:.005,crop:[520,-10,560,664],cap:'One of my own questions'},
       {q:.645,crop:[8,70,612,550],cap:'A server, a session, then Gemini'},
       {win:1,cap:'The reply streamed back. It ran 639 words.'}]})
   /* ---- the dials (DialKit): every parameter that shapes this section's feel; a glyph or the queued follow-up rebuilds the
@@ -1411,7 +1411,7 @@ const TIMING={beats:{gather:0,handoff:.10,stack:.17,ask:.25,worker:.32,session:.
 const TB=TIMING.beats;
 /* one step per beat: [q from, q to, ms] — the stack draws and the ask is typed, then each layer takes it in turn, then the reply */
 const STEPS=[
-  {q:[.165,TB.worker],ms:4200,h:'One question that didn’t need me',p:'Asked in Slack, the way anyone would.'},
+  {q:[.165,TB.worker],ms:4200,h:'One of my own questions',p:'Asked in Slack, the way anyone would.'},
   {q:[TB.worker,TB.session],ms:2600,h:'A server on Cloudflare',p:'It picks up the mention and adds a 👀, so whoever asked knows it’s on it.'},
   {q:[TB.session,TB.model],ms:3000,h:'A session for the thread',p:'It keeps the context, so a long answer isn’t cut off.'},
   {q:[TB.model,TB.tools],ms:2600,h:'Gemini',p:'The model reads the question and plans where to look.'},

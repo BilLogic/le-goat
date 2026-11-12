@@ -5280,7 +5280,7 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
       [msg('bot','9:05 AM',`${think(2000,`${step(null,'Reading the question')}${step('comment','Reading yesterday’s crit threads',['#plus-product · #plus · crit notes'])}`)}<div ${S(2200)}><div class="body"><p><b>Three things from yesterday’s crit:</b></p><p>• Dashboard progress is <b>stepped</b>, not a percentage (${A('#plus-product')})<br>• New tutors now shadow <b>two</b> sessions (${A('#plus')})<br>• Your schedule page review moved to <b>Thursday</b> (${A('crit notes')})</p></div>${FOOT}${THUMBS}</div>`),800]]},
    {k:'Knows who to ask',p:'“Who should I reach out to?”',bar:'<b># plus-design</b><span>22 members</span>',
     items:[[msg('res','1:31 PM',`<div class="body">${mention('@le goat how do I get access to the session recordings?')}</div>`),0],
-      [msg('bot','1:31 PM',`${think(1800,`${step(null,'Reading the question')}${step('map','Searching the blueprint',['“session recordings access”','4 matches'])}`)}<div ${S(2000)}><div class="body"><p><b>Ask Danielle.</b> Danielle manages access to the session recordings. Here’s a request you can paste:</p></div><div class="card paste"><div class="tx">Hi Danielle, could I get view access to the session recordings? I’m on the tutor schedule redesign. Thanks!</div></div>${SRC(null,[['Blueprint','Session recordings · who grants access'],['Slack','#plus-research thread, Feb 12']])}${FOOT}${THUMBS}</div>`),800]]},
+      [msg('bot','1:31 PM',`${think(1800,`${step(null,'Reading the question')}${step('map','Searching the blueprint',['“session recordings access”','4 matches'])}`)}<div ${S(2000)}><div class="body"><p><b>Ask Nikola J.</b> Nikola manages access to the session recordings. Here’s a request you can paste:</p></div><div class="card paste"><div class="tx">Hi Nikola, could I get view access to the session recordings? I’m on the tutor schedule redesign. Thanks!</div></div>${SRC(null,[['Blueprint','Session recordings · who grants access'],['Slack','#plus-research thread, Feb 12']])}${FOOT}${THUMBS}</div>`),800]]},
    {k:'Guides the practice',p:'“When should I use a filled button or an outline button?”',bar:'<b># plus-design</b><span>22 members</span>',
     items:[[msg('eng','3:12 PM',`<div class="body">${mention('@le goat when should I use a filled button vs an outline button?')}</div>`),0],
       [msg('bot','3:12 PM',`${think(2100,`${step(null,'Reading the question and this thread')}${step('book','Checking Button usage in the design system',['Button · fill'])}`)}<div ${S(2300)}><div class="body"><p><b>Use outline.</b> Next to a filled primary, the secondary button should be <code class="sk-code">outline</code> so the primary stays the clear action. Use <code class="sk-code">tonal</code> for quieter emphasis when nothing filled sits beside it.</p><table class="sk-tbl"><thead><tr><th>Fill</th><th>When</th></tr></thead><tbody><tr><td>filled</td><td>Primary action</td></tr><tr><td>outline</td><td>Secondary next to filled</td></tr><tr><td>tonal</td><td>Soft emphasis, alone</td></tr><tr><td>ghost</td><td>Tertiary / low emphasis</td></tr></tbody></table></div>${SRC(null,[['Storybook','Button · fill'],['Design system','Button usage guidelines'],['Figma','Button component']])}${FOOT}${THUMBS}</div>`),800]]},
@@ -6674,8 +6674,8 @@ const ART=(()=>{const AX=120,AY=160,C=Math.SQRT1_2,KY=Math.cos(55*Math.PI/180)*M
   // Each speaker is a role, with its initials, one per real person, so a role repeats where the same person spoke; no private DMs.
   const PPL={lead:['Design lead','DL','','#f6c9df'],pm:['PM','PM','','#f8ddb4'],tl:['Tech lead','TL','','#cfe9f4'],
     dev:['Engineer','E','','#c9eedd'],dt:['Design technologist','DT','','#e2d6f5'],team:['Team sync','TS','','#e4e6e7'],
-    // the Figma tile's notes are named teammates (first name + last initial), pilot week one
-    cy:['Christy Y.','CY','','#f6c9df'],ah:['Adrija H.','AH','','#c9eedd'],ec:['Emme C.','EC','','#e2d6f5']};
+    // the Figma tile's notes use stand-in names (NBA first name + last initial), pilot week one
+    cy:['Steph C.','SC','','#f6c9df'],ah:['Kyrie I.','KI','','#c9eedd'],ec:['Tim D.','TD','','#e2d6f5']};
   const NOTES={
     t0:[['slack','cy','Sep 2','half my le goat questions come up while i’m in figma lol. any chance it could live in the comments?','👀 3'],
         ['slack','ah','Sep 3','+1. i keep pasting frame links into slack just to ask it which token to use 🙃 way faster if i could just @ it on the frame','➕ 4'],
@@ -10084,15 +10084,15 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',sankey);
     nums.forEach(b=>b.textContent='0');requestAnimationFrame(tick)}
   /* the notes: role, initials, avatar color (one person, one color, as everywhere on the site), channel, time, text with
      [[marked]] words, reactions */
-  // recreated in the team's voice and signed by the teammates who gave their permission (assets/notes/notes.json); the first three on phones
-  const NOTES=[["Will M.","Software Engineer","WM","#3d6fb6","plus-dev","2:47 PM","nice! that's the card from yday, [[saved me a dig]]. ty",[["🙌", 2]]],
-    ["Suraj A.","Head of Product","SA","#b5532f","plus-product","4:32 PM","Perfect, [[didn't have to bug Bill]] for this one. Thanks so much!",[["😅", 1]]],
-    ["Christy Y.","Product Design Intern","CY","#5f6fa8","plus-design-learning","11:06 PM","oop it's 11pm and it [[still answered]] B) ty goat",[["😂", 2], ["🐐", 1]]],
-    ["Zach L.","ML Engineer","ZL","#a1456d","plus-dev","5:51 PM","man, goat knows the roadmap [[better than i do]] 😂",[["😂", 4]]],
-    ["Bryan H.","Product Designer","BH","#4f7d3a","plus-design","10:18 AM","yess this is the spec from last spring, [[thank you!!]]",[["🐐", 3]]],
-    ["Hui C.","QA Engineer","HC","#8a6a1c","plus-qa","9:40 AM","got access in like [[two minutes]], will lmk if anything breaks",[["⚡", 2]]],
-    ["Adrija H.","Interaction + Visual Designer","AH","#9a4f86","plus-design","12:20 PM","ok that's [[way faster]] than searching notion... appreciate it",[["🙌", 2], ["🐐", 1]]],
-    ["Emme C.","Tutor Supervisor","EC","#2f8a6b","plus","8:41 PM","🐐🐐🐐 found the help center article, [[thank you!!]]",[["🎉", 1]]]];
+  // recreated in the team's voice and signed with stand-in names (NBA first name + last initial); the first three on phones
+  const NOTES=[["Kevin D.","Software Engineer","KD","#3d6fb6","plus-dev","2:47 PM","nice! that's the card from yday, [[saved me a dig]]. ty",[["🙌", 2]]],
+    ["LeBron J.","Head of Product","LJ","#b5532f","plus-product","4:32 PM","Perfect, [[didn't have to bug Bill]] for this one. Thanks so much!",[["😅", 1]]],
+    ["Steph C.","Product Design Intern","SC","#5f6fa8","plus-design-learning","11:06 PM","oop it's 11pm and it [[still answered]] B) ty goat",[["😂", 2], ["🐐", 1]]],
+    ["Giannis A.","ML Engineer","GA","#a1456d","plus-dev","5:51 PM","man, goat knows the roadmap [[better than i do]] 😂",[["😂", 4]]],
+    ["Luka D.","Product Designer","LD","#4f7d3a","plus-design","10:18 AM","yess this is the spec from last spring, [[thank you!!]]",[["🐐", 3]]],
+    ["Kawhi L.","QA Engineer","KL","#8a6a1c","plus-qa","9:40 AM","got access in like [[two minutes]], will lmk if anything breaks",[["⚡", 2]]],
+    ["Kyrie I.","Interaction + Visual Designer","KI","#9a4f86","plus-design","12:20 PM","ok that's [[way faster]] than searching notion... appreciate it",[["🙌", 2], ["🐐", 1]]],
+    ["Tim D.","Tutor Supervisor","TD","#2f8a6b","plus","8:41 PM","🐐🐐🐐 found the help center article, [[thank you!!]]",[["🎉", 1]]]];
   /* a real Slack message, wide and short: the name, the role and the time on one line, the reply in one or two lines */
   const card=([who,role,ini,col,ch,t,txt,rx])=>`<div class="rs-ch">Replied to a thread in <b>#</b> ${ch}</div><div class="rs-m"><div class="rs-av" style="background:${col}">${ini}</div><div style="min-width:0"><div class="rs-who">${who}<span class="rs-role">${role}</span><small>${t}</small></div><div class="rs-body">${txt.replace(/\[\[(.+?)\]\]/g,'<mark class="rs-hl">$1</mark>')}</div><div class="rs-rx">${rx.map(([e,c])=>`<span class="rs-re">${e} ${c}</span>`).join('')}</div></div></div>`;
   const wall=sec.querySelector('.rs-wall');let cards=[],t0=null,raf=0;

@@ -22,6 +22,6 @@ while read -r name w h s e kind platform; do
   fi
   printf '%-34s %5.2f MB\n' "$out" "$(echo "$(stat -f%z "$out")/1000000" | bc -l)"
 done <<'LIST'
-li-feed-4x5 1080 1350 8.8 19.4 gif linkedin
-story-reel-9x16 1080 1920 8.8 19.1 mp4 instagram
+li-feed-4x5 1080 1350 8.6 20.0 gif linkedin
+story-reel-9x16 1080 1920 6.3 17.5 mp4 instagram
 LIST
